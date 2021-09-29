@@ -9,11 +9,12 @@ const requestHandler = (req, res) => {
     if (url === '/'){
         res.write('<html>');
         res.write('<head><title>Enter a message here</title></head>');
-        res.write('<body><form action="/message" method="POST"><input type = "text" name="tekst"><button type="submit"> Click me to send!</button></form></body>');
+        res.write('<body><form action="/message" method="POST"><input type = "text" name="message"><button type="submit"> Click me to send!</button></form></body>');
         res.write('</html>');
 
         return res.end();
     };
+
 
     if(url === '/message' && method === 'POST'){
         
