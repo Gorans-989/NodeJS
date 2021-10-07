@@ -2,7 +2,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require('path');
 
+<<<<<<< HEAD
 const db = require('./util/database.js');
+=======
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -12,6 +15,7 @@ const adminRoutes = require("./routes/admin.js");
 const shopRoutes = require('./routes/shop.js');
 const pageNotFoundController = require('./controllers/error');
 
+<<<<<<< HEAD
 // db.execute('SELECT * FROM products')
 //     .then((result)=> {
 //         console.log(result[0],"the next one", result[1])
@@ -20,6 +24,8 @@ const pageNotFoundController = require('./controllers/error');
 //         console.log(error)
 //     });
 
+=======
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')))// za public folderot da moze da go cita.
 console.log(__dirname); //ja dava rutata t.e. kade se naoga na pc-to lokalno

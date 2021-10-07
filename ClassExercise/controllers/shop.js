@@ -1,7 +1,10 @@
 const Product = require('../models/product')
 const Cart = require('../models/cart');
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
 exports.getProducts = (req, res, next) => {
     Product.fetchAll((products) => {
         res.render('shop/product-list', {
@@ -28,6 +31,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
+<<<<<<< HEAD
     Cart.getCart(cart => {
         Product.fetchAll(products => {
             const cartProducts = [];
@@ -44,6 +48,13 @@ exports.getCart = (req, res, next) => {
             });
         });
     });
+=======
+    // treba da ima array od proizvodi
+    res.render('shop/cart', {
+        pageTitle: 'Your cart',
+        path: '/cart'
+    })
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
 }
 
 exports.getCheckout = (req, res, next) => {
@@ -78,6 +89,7 @@ exports.postCart = (req, res, next) => {
         Cart.addProduct(prodId, product.price);
     })
     res.redirect('/cart');
+<<<<<<< HEAD
 }
 
 exports.postDeleteCartItems = (req, res, next) => {
@@ -87,4 +99,6 @@ exports.postDeleteCartItems = (req, res, next) => {
         res.redirect('/cart')
     });
 
+=======
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
 }

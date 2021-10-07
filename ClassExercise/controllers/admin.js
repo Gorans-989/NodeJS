@@ -3,8 +3,12 @@ const Product = require('../models/product')
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: "Add Product",
+<<<<<<< HEAD
         path: '/admin/add-product',
         editing: false
+=======
+        path: '/admin/add-product'
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
     });
 };
 
@@ -14,7 +18,11 @@ exports.postAddProduct = (req, res, next) => {
     // const description = req.body.description;
     // const price = req.body.price;
 
+<<<<<<< HEAD
     const product = new Product(null, req.body.title, req.body.imgUrl, req.body.description, req.body.price);
+=======
+    const product = new Product(req.body.title, req.body.imgUrl, req.body.description, req.body.price);
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
 
     product.save();
     res.redirect("/");
@@ -31,6 +39,7 @@ exports.getAdminProducts = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
+<<<<<<< HEAD
     const editMode = req.query.edit;
     console.log(typeof (editMode));
     if (!editMode) {
@@ -70,3 +79,11 @@ exports.postDeleteProduct = (req, res, next) => {
 
     res.redirect("/admin/products");
 }
+=======
+    res.render('admin/edit-product', {
+        pageTitle: "Add Product",
+        path: '/admin/add-product'
+
+    });
+};
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83

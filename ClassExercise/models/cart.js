@@ -7,7 +7,12 @@ const p = path.join(
     'cart.json'
 );
 
+<<<<<<< HEAD
 exports = class Cart {
+=======
+
+module.exports = class Cart {
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
 
     static addProduct(id, productPrice) {
         //              Fetch the previous cart
@@ -41,7 +46,11 @@ exports = class Cart {
                 cart.products[existingProductIndex].qty = cart.products[existingProductIndex].qty + 1;
             }
             else {
+<<<<<<< HEAD
                 cart.products.push({ id: id, qty: 1 });
+=======
+                cart.products.push({id:id, qty:1});
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
             }
 
             //cart.totalPrice = cart.totalPrice + +productPrice;
@@ -53,6 +62,7 @@ exports = class Cart {
 
         })
     }
+<<<<<<< HEAD
 
     static deleteProduct(id, productPrice) {
         fs.readFile(p, (error, fileContent) => {
@@ -89,3 +99,6 @@ exports = class Cart {
         });
     };
 };
+=======
+}
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83

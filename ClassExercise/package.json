@@ -18,7 +18,10 @@
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-handlebars": "^3.0.2",
+<<<<<<< HEAD
     "mysql2": "^2.3.0",
+=======
+>>>>>>> 1f9af7c520b3c0f43fa8c0e2f245c1dcb2a93e83
     "pug": "^3.0.2"
   }
 }
