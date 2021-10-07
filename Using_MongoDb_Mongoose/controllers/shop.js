@@ -54,6 +54,7 @@ const shopController = {
     },
 
     getProduct: (req, res, next) => {
+        console.log("========================",req.url);
         const prodId = req.params.productId;
 
         Product.findById(prodId)
