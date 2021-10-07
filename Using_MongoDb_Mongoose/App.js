@@ -4,7 +4,7 @@ import express from "express";
 import bodyParser from "body-parser";
 
 import { get404 } from './controllers/error.js';
-import { mongoConnect } from './util/database.js';
+import { mongoConnect } from './util/database';
 
 
 const dirName = path.dirname(fileURLToPath(import.meta.url));
