@@ -12,7 +12,6 @@ console.log(dirName);
 
 const app = express();
 
-
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
