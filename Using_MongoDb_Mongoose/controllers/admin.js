@@ -17,9 +17,15 @@ const adminController = {
         const imgUrl = req.body.imgUrl;
         const user = req.user; //this is a string. we pulled it from the body
 
-        const product = new Product(title, price, description, imgUrl, null, user._id);
+        const product = new Product({
+            title: title,
+            price: price,
+            description: description,
+            imgUrl: imgUrl
+        });
         //console.log("=========================================================== the product:",product);
-        product.save()
+        product
+            .save()
             .then(result => {
                 console.log('Created Product succesfully');
                 res.redirect('/admin/products');
@@ -30,7 +36,7 @@ const adminController = {
     },
     // admin products GET
     getAdminProducts: (req, res, next) => {
-        Product.fetchAll()
+        Product.find()
             .then(products => {
                 res.render('admin/product-list-admin', {
                     prods: products,
@@ -52,7 +58,6 @@ const adminController = {
         const prodId = req.params.productId;
 
         Product.findById(prodId)
-            // Product.findByPk(prodId)
             .then(product => {
                 if (!product) {
                     return res.redirect("/");
@@ -76,17 +81,22 @@ const adminController = {
         const description = req.body.description;
         const imgUrl = req.body.imgUrl;
 
+        
 
-        // Product.findById(prodId)
-        //     .then(productData =>  {
-        const product = new Product(title, price, description, imgUrl, prodId, req.user._id);
+        Product.findById(prodId)
+            .then(product =>  {
+                product.title= title;
+                product.price= price;
+                product.description= description;
+                product.imgUrl= imgUrl;
 
-        product.save()
-            .then((result) => {
-                console.log('Product updated successfully');
-                res.redirect('/admin/products');
-            })
-            .catch(err => console.log(err));
+                return product.save()
+        })
+        .then((result) => {
+            console.log('Product updated successfully');
+            res.redirect('/admin/products');
+        })
+        .catch(err => console.log(err));
     },
     // Delete product POST
     postDeleteProduct: (req, res, next) => {

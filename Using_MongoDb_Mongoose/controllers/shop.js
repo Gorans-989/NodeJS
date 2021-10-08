@@ -3,8 +3,9 @@ import { Product } from "../models/product.js";
 const shopController = {
     getProducts: (req, res, next) => {
 
-        Product.fetchAll()
+        Product.find()
             .then(products => {
+                console.log("=======", products)
                 res.render('shop/product-list', {
                     prods: products,
                     pageTitle: 'All Products',
@@ -16,7 +17,7 @@ const shopController = {
     },
     // this are all middleware functions
     getIndex: (req, res, next) => {
-        Product.fetchAll()
+        Product.find()
             .then(products => {
                 res.render('shop/index', {
                     prods: products,
