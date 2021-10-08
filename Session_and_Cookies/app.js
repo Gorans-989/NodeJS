@@ -3,11 +3,20 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
+const MONGODB_URI = 'mongodb+srv://Gost:gogo989@mycluster.7iwvx.mongodb.net/shop?w=majority';
+
 const app = express();
+const store = new MongoDBStore({
+  url: MONGODB_URI,
+  collection: 'sessions'
+});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -20,7 +29,9 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(session({ secret: " my secret", resave: false, saveUninitialized: false, store: store }));
+//resave false - dont resave session on every request that is done - only if something changes in the session
+// no session to be saved for a request that doesnt needet because nothing inside was changed
 console.log(__dirname);
 
 app.use((req, res, next) => {
@@ -40,14 +51,14 @@ app.use(errorController.get404);
 
 mongoose
   .connect(
-    'mongodb+srv://Gost:gogo989@mycluster.7iwvx.mongodb.net/shop?retryWrites=true&w=majority'
+    MONGODB_URI
   )
   .then(result => {
     User.findOne().then(user => {
       if (!user) {
         const user = new User({
-          name: 'Max',
-          email: 'max@test.com',
+          name: 'Goran',
+          email: 'gorans989@yahoo.com',
           cart: {
             items: []
           }
