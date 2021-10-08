@@ -79,7 +79,7 @@ const adminController = {
 
         // Product.findById(prodId)
         //     .then(productData =>  {
-        const product = new Product(title, price, description, imgUrl, null, req.user._id);
+        const product = new Product(title, price, description, imgUrl, prodId, req.user._id);
 
         product.save()
             .then((result) => {

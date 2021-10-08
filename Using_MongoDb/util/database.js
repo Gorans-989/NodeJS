@@ -1,8 +1,9 @@
 import { MongoClient as _MongoClient } from 'mongodb';
 const MongoClient = _MongoClient;
 
-let _db;
 
+let _db;
+//mongodb+srv://Gost:<password>@mycluster.7iwvx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 const mongoConnect = callback => {
     MongoClient.connect("mongodb+srv://Gost:gogo989@mycluster.7iwvx.mongodb.net/shop?retryWrites=true&w=majority")
         .then(client => {
