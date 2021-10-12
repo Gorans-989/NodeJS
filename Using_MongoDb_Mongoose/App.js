@@ -20,7 +20,7 @@ app.set('views', 'views');
 import { router as adminRoutes } from './routes/admin.js';
 import { router as shopRoutes } from "./routes/shop.js";
 
-//import { User } from "./models/user.js";
+import { User } from "./models/user.js";
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,17 +28,17 @@ app.use(express.static(join(dirName, 'public')));
 // za public folderot da moze da go cita.
 //ja dava rutata t.e. kade se naoga na pc-to lokalno
 
-// app.use((req, res, next) => {
-//     User.findById("615d50801a32c6f580e3b434")
-//         .then(user => {
-//             req.user = new User(user.userName, user.email, user.cart, user._id);
-//             next();
-//         })
-//         .catch(err => {
-//             console.log(err);
-//         })
-//     // next();
-// });
+app.use((req, res, next) => {
+    User.findById("616163361be2b40b15258d73")
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    // next();
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
@@ -51,11 +51,22 @@ app.use(get404);
 //     app.listen(3000);
 // })
 mongoose.connect(urlDb)
-.then(result => {
-    app.listen(3000);
-})
-.catch(err => {
-    console.log(err);
-})
-//default routa e " / ". zatoa ne e definirana
-// gi targetirame site url adresi sto zapocnuvaat so localhost:3000/ dokolku tekstot posle /  ne odgovara na nitu eden end point (na primer /admin/add-product) da go prenasoci na nashiot 'page not found file'
+    .then(result => {
+        if (!User.findById("616163361be2b40b15258d73")) 
+        {
+            const user = new User({
+                name: "Gost",
+                email: "goran@email.com",
+                cart: {
+                    items: []
+                }
+            });
+            user.save();
+        }
+
+        app.listen(3000);
+    })
+    .catch(err => {
+        console.log(err);
+    }
+);

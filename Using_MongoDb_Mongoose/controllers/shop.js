@@ -4,6 +4,8 @@ const shopController = {
     getProducts: (req, res, next) => {
 
         Product.find()
+            //.select("title price -_id") // select the properties you need - for nested object use "." eg: Product.userId.cart.items etc
+            //.populate('userId', " -_id ") // with the "-" you specify what to exclude
             .then(products => {
                 console.log("=======", products)
                 res.render('shop/product-list', {
@@ -73,11 +75,12 @@ const shopController = {
         const prodId = req.body.productId;
         Product.findById(prodId)
             .then(product => {
-                req.user.addToCart(product);
-                res.redirect('/cart');
+                console.log("===+++", product);
+                return req.user.addToCart(product);
             })
             .then(result => {
-                console.log(result);
+                console.log("=======",result);
+                res.redirect('/cart');
             })
             .catch(err => {
                 console.log(err);
