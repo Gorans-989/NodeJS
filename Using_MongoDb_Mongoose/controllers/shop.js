@@ -1,4 +1,5 @@
 import { Product } from "../models/product.js";
+import { orderModel as Order } from "../models/order.js";
 
 const shopController = {
     getProducts: (req, res, next) => {
@@ -32,8 +33,10 @@ const shopController = {
 
     getCart: (req, res, next) => {
         req.user
-            .getCart()
-            .then(products => {
+            .populate("cart.items.productId")
+            .then(user => {
+                const products = [...user.cart.items];
+                console.log(products);
                 res.render('shop/cart', {
                     pageTitle: 'Your cart',
                     path: '/cart',
@@ -57,7 +60,7 @@ const shopController = {
     },
 
     getProduct: (req, res, next) => {
-        console.log("========================",req.url);
+        console.log("========================", req.url);
         const prodId = req.params.productId;
 
         Product.findById(prodId)
@@ -79,7 +82,7 @@ const shopController = {
                 return req.user.addToCart(product);
             })
             .then(result => {
-                console.log("=======",result);
+                console.log("=======", result);
                 res.redirect('/cart');
             })
             .catch(err => {
@@ -90,7 +93,7 @@ const shopController = {
     postCartDeleteProduct: (req, res, next) => {
         const prodId = req.body.productId;
 
-        req.user.deleteCartItems(prodId)
+        req.user.removeFromCart(prodId)
             .then(result => {
                 res.redirect('/cart')
             })
@@ -102,11 +105,31 @@ const shopController = {
     },
 
     postOrder: (req, res, next) => {
-        let fetchedCart;
-
         req.user
-            .addOrder()
+            .populate("cart.items.productId")
+            .then(user => {
+                console.log("=============", user.cart.items);
+                const products = user.cart.items.map(i => {
+                    return {
+                        quantity: i.quantity,
+                        product: { ...i.productId._doc }
+                    };
+                });
+                const order = new Order({
+                    user: {
+                        name: req.user.name,
+                        userId: req.user
+                    },
+                    products: products
+                });
+                console.log(products)
+                return order.save();
+            })
             .then(result => {
+                return req.user.clearCart();
+
+            })
+            .then(() => {
                 res.redirect('./orders');
             })
             .catch(err => console.log(err))
@@ -114,8 +137,9 @@ const shopController = {
 
     getOrders: (req, res, next) => {
         // treba da ima array od proizvodi
-        req.user.getOrders()
+        Order.find({"user.userId": req.user._id})
             .then(orders => {
+                console.log("===============================================",orders)
                 res.render('shop/orders.ejs', {
                     pageTitle: 'Your orders',
                     path: '/orders',

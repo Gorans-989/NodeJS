@@ -42,6 +42,8 @@ const adminController = {
     // admin products GET
     getAdminProducts: (req, res, next) => {
         Product.find()
+            //.select("title price -_id") // select the properties you need - for nested object use "." eg: Product.userId.cart.items etc
+            //.populate('userId', " -_id ") // with the "-" you specify what to exclude
             .then(products => {
                 console.log(products);
                 res.render('admin/product-list-admin', {

@@ -1,13 +1,30 @@
-// const Sequelize = require('sequelize').Sequelize;
-// const sequelize = require('../util/database.js');
+import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
-// const Order = sequelize.define('order', {
-//     id: {
-//         type: Sequelize.INTEGER,
-//         autoIncrement: true,
-//         primaryKey: true,
-//         allowNull: false
-//     }
-// });
 
-// module.exports = Order
+const orderSchema = new Schema({
+    products: [{
+        product: {
+            type: Object,
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        }
+    }],
+    user: {
+        name: {
+            type: Object,
+            required: true
+        },
+        userId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "User"
+        }
+    }
+});
+
+const orderModel = mongoose.model('Order', orderSchema);
+export { orderModel };

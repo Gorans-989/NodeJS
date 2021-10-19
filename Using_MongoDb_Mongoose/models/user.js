@@ -22,6 +22,7 @@ const userSchema = new Schema({
         ]
     }
 });
+
 userSchema.methods = {
 
     addToCart: function (product) {
@@ -47,6 +48,19 @@ userSchema.methods = {
         console.log("============");
         console.log(updatedCart);
         this.cart = updatedCart;
+        return this.save();
+    },
+
+    removeFromCart: function (productId) {
+        const updatedCartItems = this.cart.items.filter(item => {
+            return item.productId.toString() !== productId.toString();
+        });
+        this.cart.items = [...updatedCartItems];
+        return this.save();
+    },
+
+    clearCart: function () {
+        this.cart = { items: [] };
         return this.save();
     }
 
