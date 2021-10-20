@@ -1,4 +1,6 @@
 import { User } from "../models/user.js";
+import bcryptJs from "bcryptjs";
+import { Note } from "../models/note.js";
 
 const userController = {
 
@@ -28,7 +30,7 @@ const userController = {
         console.log(id);
         try {
             const userDb = await User.findById(id);
-            if (!userDb){
+            if (!userDb) {
                 return res.status(302).json({
                     message: `No user found with id: ${id}`
                 })
@@ -39,7 +41,7 @@ const userController = {
                 user: userDb
             })
         } catch (error) {
-            if(!error.statusCode){
+            if (!error.statusCode) {
                 error.statusCode = 500;
             }
             res.redirect(500, "/");
@@ -60,12 +62,13 @@ const userController = {
                 })
             }
 
+            const hashPassword = await bcryptJs.hash(password, 12);
             const user = new User({
                 email: email,
                 userName: userName,
                 role: role,
-                notes: notes ? [] : notes,
-                password: password
+                notes: notes ? notes : [],
+                password: hashPassword
             });
             user.save();
             res.status(201).json({
@@ -83,20 +86,23 @@ const userController = {
 
     updateUser: async (req, res, next) => {
 
-        const { email, password, userName, role, notes, id } = req.body;
-        console.log(email);
-        try {
 
-            const userDb = await User.findByIdAndUpdate(id, {
+        try {
+            const { email, userName, role, notes, _id } = req.body;
+            console.log(email);
+
+            // const hashPassword = await bcryptJs.hash(password, 12);
+            // console.log(hashPassword);
+            const userDb = await User.findByIdAndUpdate(_id, {
                 "email": email,
-                "password": password,
+                //"password": password? hashPassword: "",
                 "userName": userName,
                 "role": role,
-                "notes": notes
+                "notes": notes ? notes : []
             })
             if (!userDb) {
                 return res.status(200).json({
-                    message: "Error!"
+                    message: "Error! cant update"
                 })
             }
 
@@ -108,26 +114,26 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
+            //res.redirect(500, "/");
             //next(error);
         }
     },
 
-    deleteUser: async (req, res, next)=> {
-        
-        
+    deleteUser: async (req, res, next) => {
+
+
         try {
-            const {id} = req.body;
+            const { id } = req.body;
             const userDb = await User.findByIdAndDelete(id);
-            if(!userDb){
+            if (!userDb) {
                 res.status(200).json({
-                    message:"Cant find user with that id"
-                })   
-            }    
+                    message: "Cant find user with that id"
+                })
+            }
 
             res.status(200).json({
-                message:"Used deleted!"
-            });   
+                message: "Used deleted!"
+            });
 
         } catch (error) {
             if (!error.statusCode) {
@@ -136,6 +142,40 @@ const userController = {
             res.redirect(500, "/");
             //next(error);
         }
+    },
+
+    addNoteToUser: async (req, res, next) => {
+
+        try {
+            const user = await User.findById("616f516454a13fa1bca37697")
+            console.log(user);
+            // hot to get the user. if he is logged in i need his data to travel with every request until he logs out
+
+            const noteId = req.body._id;
+
+
+            const noteDb = await Note.findById(noteId);
+
+            console.log(noteDb);
+            
+            const result = user.addNoteToUser(noteDb);
+            // .then(result => {
+            //     res.status(200).json({
+            //         message: result
+            //     });
+            // })
+
+
+            
+
+
+        } catch (error) {
+            if (!error.statusCode) {
+                error.statusCode = 500;
+            }
+            res.redirect(500, "/");
+        }
+
     }
 }
 

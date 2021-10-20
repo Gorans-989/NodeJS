@@ -19,7 +19,7 @@ const noteSchema = new Schema({
         required: false
     },
     userId: {
-        type: Schema.Types.ObjectId, ref: "User",required:false
+        type: Schema.Types.ObjectId, ref: "User", required: false
     }
 
 })
