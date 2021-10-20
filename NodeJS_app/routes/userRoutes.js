@@ -6,7 +6,7 @@ import {userController} from "../controllers/userController.js";
 
 //GET   /users
 router.get("/users", userController.getAll);
-router.get("/users/:userId", userController.getOne);
+router.get("/users/:userId", userController.getOne); // think of a better way
 // POST /users
 router.post("/users", userController.createUser);
 router.post("/users/addNoteToUser", userController.addNoteToUser);

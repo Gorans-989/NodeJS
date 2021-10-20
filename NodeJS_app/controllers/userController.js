@@ -1,37 +1,54 @@
 import { User } from "../models/user.js";
 import bcryptJs from "bcryptjs";
 import { Note } from "../models/note.js";
+import { userService } from "../services/userService.js";
 
 const userController = {
 
     getAll: async (req, res, next) => {
+
         try {
-            const users = await User.find()
-                .select("email userName role -_id");
+            const users = await userService.getAll();
+            // if (!user) {
+            //    throw new Error({error.statusCode: 404})
+            // }
             res.status(200).json({
-                message: "Getting successfull",
+                message: "Getting all users is successfull!",
                 users: users
-
-            })
-
-            //.select("title price -_id") // select the properties you need - for nested object use "." eg: Product.userId.cart.items etc
-            //.populate('userId', " -_id ") // with the "-" you specify what to exclude
+            });
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
-            //next(error);
         }
+
+        // try {
+        //     const users = await User.find()
+        //         .select("email userName role -_id");
+        //     res.status(200).json({
+        //         message: "Getting successfull",
+        //         users: users
+
+        //     })
+
+        //     //.select("title price -_id") // select the properties you need - for nested object use "." eg: Product.userId.cart.items etc
+        //     //.populate('userId', " -_id ") // with the "-" you specify what to exclude
+        // } catch (error) {
+        //     if (!error.statusCode) {
+        //         error.statusCode = 500;
+        //     }
+        //     res.redirect(500, "/");
+        //     //next(error);
+        // }
     },
 
     getOne: async (req, res, next) => {
         const id = req.params.userId;
-        console.log(id);
+        console.log(`the id from get one${id}`);
         try {
             const userDb = await User.findById(id);
             if (!userDb) {
-                return res.status(302).json({
+                return res.status(422).json({
                     message: `No user found with id: ${id}`
                 })
             }
@@ -44,7 +61,7 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
+            //res.redirect(500, "/");
             //next(error);
         }
     },
@@ -57,7 +74,7 @@ const userController = {
             // const userDb = await User.findOne({ "email": email });
 
             if (await User.findOne({ "email": email })) {
-                return res.status(200).json({
+                return res.status(404).json({
                     message: " Cant use existing email."
                 })
             }
@@ -79,7 +96,10 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
+            res.status(500).json({
+                message: "User created Successfully"
+            })
+            //res.redirect(500, "/");
             //next(error);
         }
     },
@@ -101,7 +121,7 @@ const userController = {
                 "notes": notes ? notes : []
             })
             if (!userDb) {
-                return res.status(200).json({
+                return res.status(404).json({
                     message: "Error! cant update"
                 })
             }
@@ -126,12 +146,12 @@ const userController = {
             const { id } = req.body;
             const userDb = await User.findByIdAndDelete(id);
             if (!userDb) {
-                res.status(200).json({
+                res.status(404).json({
                     message: "Cant find user with that id"
                 })
             }
 
-            res.status(200).json({
+            res.status(204).json({
                 message: "Used deleted!"
             });
 
@@ -139,7 +159,7 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
+            //res.redirect(500, "/");
             //next(error);
         }
     },

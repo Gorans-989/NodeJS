@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/notes/", noteController.getAll);
 
 //GET one       /notes/:noteId
-router.get("/notes/:noteId", noteController.getOne);
+router.get("/notes/:noteId", noteController.getOne); // not ok
 
 //POST create   /notes/create
 router.post("/notes/create", noteController.createNote);

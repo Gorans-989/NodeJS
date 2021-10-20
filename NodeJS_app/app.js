@@ -6,6 +6,7 @@ import { router as noteRoutes} from "./routes/noteRoutes.js";
 import urlDb from "./db/database.js";
 import {User} from "./models/user.js";
 
+import pageNotFound from "./controllers/404.js";
 
 const app = express();// start server
 
@@ -20,8 +21,10 @@ app.use((req, res, next) => {
 
 
 
-app.use("/", userRoutes);
-app.use("/", noteRoutes);
+app.use(userRoutes);
+app.use(noteRoutes);
+
+app.use("/",pageNotFound);
 
 mongoose.connect(urlDb)
 .then(result => {

@@ -17,10 +17,10 @@ const noteSchema = new Schema({
     color: {
         type: String,
         required: false
-    },
-    userId: {
-        type: Schema.Types.ObjectId, ref: "User", required: false
     }
+    // userId: {
+    //     type: Schema.Types.ObjectId, ref: "User", required: false
+    // }
 
 })
 
