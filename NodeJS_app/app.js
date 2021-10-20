@@ -1,6 +1,7 @@
 import express from "express";
 import  mongoose from "mongoose";
-import { router as userRoutes } from "./routes/userRoutes.js"
+import { router as userRoutes } from "./routes/userRoutes.js";
+import { router as noteRoutes} from "./routes/noteRoutes.js";
 //import bodyParser from "body-parser" deprecated
 import urlDb from "./db/database.js";
 import {User} from "./models/user.js";
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 
 
 app.use("/", userRoutes);
+app.use("/", noteRoutes);
 
 mongoose.connect(urlDb)
 .then(result => {

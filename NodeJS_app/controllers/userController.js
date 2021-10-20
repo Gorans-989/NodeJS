@@ -19,6 +19,7 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
+            res.redirect(500, "/");
             //next(error);
         }
     },
@@ -42,6 +43,8 @@ const userController = {
             if(!error.statusCode){
                 error.statusCode = 500;
             }
+            res.redirect(500, "/");
+            //next(error);
         }
     },
 
@@ -74,6 +77,7 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
+            res.redirect(500, "/");
             //next(error);
         }
     },
@@ -105,13 +109,16 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
+            res.redirect(500, "/");
+            //next(error);
         }
     },
 
     deleteUser: async (req, res, next)=> {
-        const {id} = req.body;
+        
         
         try {
+            const {id} = req.body;
             const userDb = await User.findByIdAndDelete(id);
             if(!userDb){
                 res.status(200).json({
@@ -127,7 +134,8 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            // next(error);
+            res.redirect(500, "/");
+            //next(error);
         }
     }
 }

@@ -1,4 +1,4 @@
-import Mongoose, { SchemaTypes } from "mongoose";
+import Mongoose from "mongoose";
 const Schema = Mongoose.Schema;
 
 const noteSchema = new Schema({
@@ -19,7 +19,7 @@ const noteSchema = new Schema({
         required: false
     },
     userId: {
-        type: Schema.Types.ObjectId, ref: "User",required:true
+        type: Schema.Types.ObjectId, ref: "User",required:false
     }
 
 })
