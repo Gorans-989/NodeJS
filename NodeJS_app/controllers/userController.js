@@ -1,6 +1,5 @@
 import { User } from "../models/user.js";
 
-
 const userController = {
 
     getAll: async (req, res, next) => {
