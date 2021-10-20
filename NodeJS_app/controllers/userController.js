@@ -157,17 +157,12 @@ const userController = {
             const noteDb = await Note.findById(noteId);
 
             console.log(noteDb);
-            
-            const result = user.addNoteToUser(noteDb);
-            // .then(result => {
-            //     res.status(200).json({
-            //         message: result
-            //     });
-            // })
 
-
-            
-
+            const result = user.addNoteToUser(noteDb)
+            console.log(result);
+            res.status(200).json({
+                message: result
+            });
 
         } catch (error) {
             if (!error.statusCode) {

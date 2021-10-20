@@ -39,7 +39,7 @@ userSchema.methods.addNoteToUser = function (note) {
 
         console.log(note);
         console.log(this.notes);
-        this.notes.push(note);
+        //this.notes.note.push();
 
         console.log("+++++++++++++++++++++++++++++++++++++++++")
         console.log(this.notes)
