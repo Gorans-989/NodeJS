@@ -1,21 +1,41 @@
 import express from "express";
-import { router as adminRoutes } from "./routes/someRoute.js"
+import  mongoose from "mongoose";
+import { router as userRoutes } from "./routes/userRoutes.js"
 //import bodyParser from "body-parser" deprecated
+import urlDb from "./db/database.js";
+import {User} from "./models/user.js";
 
 
+const app = express();// start server
 
-
-const app = express();
-
-app.use(express.json());
+app.use(express.json()); // parse the incoming request
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*"); // 
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     next();
+})// for removing CORS ( cross origin resource sharing)
+
+
+
+app.use("/", userRoutes);
+
+mongoose.connect(urlDb)
+.then(result => {
+    // const user = new User({
+    //     email: "goran@test.com",
+    //     userName: "Gost",
+    //     password: "123",
+    //     role: "admin",
+    //     notes: []
+    // })
+    // user.save();
+
+    console.log("DB conected");
+    
 })
-app.use("/", adminRoutes);
-
-
+.catch(err => {
+    console.log(err)
+})
 app.listen(8080);
