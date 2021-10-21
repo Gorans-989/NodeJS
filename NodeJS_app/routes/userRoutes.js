@@ -16,4 +16,7 @@ router.delete('/users/delete', userController.deleteUser);
 //PUT /users/update
 router.put("/users/update", userController.updateUser);
 
+// post /login
+router.post("/login", userController.log_in);
+
 export {router};

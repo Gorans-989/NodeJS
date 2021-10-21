@@ -1,5 +1,5 @@
 import Mongoose from "mongoose";
-import { Note } from "./note.js";
+
 const Schema = Mongoose.Schema;
 
 const userSchema = new Schema({
@@ -36,18 +36,6 @@ userSchema.methods.addNoteToUser = function (note) {
     throw new Error(`User already has this Note "${note.title}"`)
 }
 
+
 const User = Mongoose.model("User", userSchema);
 export { User };
-
-
-    // notes: [{
-    //     note: {
-    //         type: Object, required: true, ref: "Note"
-    //     }
-    // }],.
-    // Array [
-//     {
-//             _id: "skjfslrj",
-//             title: "blabla"
-//         }
-// ]
