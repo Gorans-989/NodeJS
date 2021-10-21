@@ -7,7 +7,7 @@ const noteController = {
         try {
             const noteDb = await Note.find();
             if (!noteDb) {
-                return res.status(200).json({
+                return res.status(404).json({
                     message: "no notes in database"
                 });
             }
@@ -21,7 +21,9 @@ const noteController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            //next(error);
+            res.status(error.statusCode).json({
+                message: error.message
+            });
         }
     },
 
@@ -31,7 +33,7 @@ const noteController = {
             const noteDb = await Note.findById(id);
 
             if (!noteDb) {
-                res.status(200).json({
+                res.status(404).json({
                     message: `Cant find note with id: ${id}`
                 })
             }
@@ -45,16 +47,15 @@ const noteController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-           res.redirect(500,"/");
-           //next(error);
+            res.status(error.statusCode).json({
+                message: error.message
+            });
         }
     },
 
     createNote: async (req, res, next) => {
-
-        const { title, content, type, color } = req.body;
-
         try {
+            const { title, content, type, color } = req.body;
             const noteDb = await Note.findOne({ "title": title });
 
             if (noteDb) {
@@ -67,27 +68,25 @@ const noteController = {
                 content: content,
                 type: type,
                 color: color ? color : null
-
             })
             newNote.save();
             res.status(201).json({
                 message: "Note created!",
                 note: newNote
-            })
-
+            });
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
-            //next(error);
+            res.status(error.statusCode).json({
+                message: error.message
+            });
         }
     },
 
     updateNote: async (req, res, next) => {
-
-        const { _id, title, type, color, content } = req.body;
         try {
+            const { _id, title, type, color, content } = req.body;
 
             const newNote = new Note({
                 title: title,
@@ -98,9 +97,9 @@ const noteController = {
             })
 
             const noteDb = await Note.findByIdAndUpdate(_id, newNote);
+            console.log(noteDb);
             if (!noteDb) {
-                // do i need return here? i cant send 2 responces at once
-                res.status(200).json({
+                res.status(404).json({
                     message: `Note with id: ${_id} doesnt exist. cant update!`
                 })
             }
@@ -112,8 +111,9 @@ const noteController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
-            //next(error);
+            res.status(error.statusCode).json({
+                message: error.message
+            });
         }
     },
 
@@ -122,22 +122,23 @@ const noteController = {
         try {
             const id = req.body._id;
             const noteDb = await Note.findByIdAndDelete(id);
+            console.log(noteDb);
             if (!noteDb) {
-                res.status(200).json({
+                res.status(404).json({
                     message: `Can find note with id: ${id} to delete!`
                 })
             }
 
-            res.status(200).json({
+            res.status(204).json({
                 message: "note deleted successfully"
             })
-
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
-            //next(error);
+            res.status(error.statusCode).json({
+                message: error.message
+            });
         }
     }
 }

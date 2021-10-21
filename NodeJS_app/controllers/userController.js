@@ -2,6 +2,7 @@ import { User } from "../models/user.js";
 import bcryptJs from "bcryptjs";
 import { Note } from "../models/note.js";
 import { userService } from "../services/userService.js";
+import e from "express";
 
 const userController = {
 
@@ -9,9 +10,11 @@ const userController = {
 
         try {
             const users = await userService.getAll();
-            // if (!user) {
-            //    throw new Error({error.statusCode: 404})
-            // }
+            if (!users) {
+                res.status(404).json({
+                    message: "No users to fetch"
+                })
+            }
             res.status(200).json({
                 message: "Getting all users is successfull!",
                 users: users
@@ -20,39 +23,21 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
+            res.status(error.statusCode).json({
+                message: error.message
+            });
         }
-
-        // try {
-        //     const users = await User.find()
-        //         .select("email userName role -_id");
-        //     res.status(200).json({
-        //         message: "Getting successfull",
-        //         users: users
-
-        //     })
-
-        //     //.select("title price -_id") // select the properties you need - for nested object use "." eg: Product.userId.cart.items etc
-        //     //.populate('userId', " -_id ") // with the "-" you specify what to exclude
-        // } catch (error) {
-        //     if (!error.statusCode) {
-        //         error.statusCode = 500;
-        //     }
-        //     res.redirect(500, "/");
-        //     //next(error);
-        // }
     },
 
     getOne: async (req, res, next) => {
-        const id = req.params.userId;
-        console.log(`the id from get one${id}`);
         try {
+            const id = req.params.userId;
             const userDb = await User.findById(id);
             if (!userDb) {
-                return res.status(422).json({
+                return res.status(404).json({
                     message: `No user found with id: ${id}`
                 })
             }
-
             res.status(200).json({
                 message: "user found",
                 user: userDb
@@ -61,20 +46,19 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            //res.redirect(500, "/");
-            //next(error);
-        }
+            res.status(error.statusCode).json({
+                message: error.message
+            });
+        };
     },
 
     createUser: async (req, res, next) => {
-        //
-        const { email, password, userName, role, notes } = req.body;
-
         try {
-            // const userDb = await User.findOne({ "email": email });
-
-            if (await User.findOne({ "email": email })) {
-                return res.status(404).json({
+            const { email, password, userName, role, notes } = req.body;
+            const userDb = await User.findOne({ "email": email });
+           
+            if (userDb) {
+                return res.status(400).json({
                     message: " Cant use existing email."
                 })
             }
@@ -95,61 +79,64 @@ const userController = {
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
-            }
+            };
             res.status(500).json({
-                message: "User created Successfully"
-            })
-            //res.redirect(500, "/");
-            //next(error);
-        }
+                message: error.message
+            });
+        };
     },
 
     updateUser: async (req, res, next) => {
 
-
         try {
-            const { email, userName, role, notes, _id } = req.body;
-            console.log(email);
-
-            // const hashPassword = await bcryptJs.hash(password, 12);
+            const { email, userName, role, notes, _id, password } = req.body;
+            // console.log(_id);
+            const hashPassword = await bcryptJs.hash(password, 12);
             // console.log(hashPassword);
-            const userDb = await User.findByIdAndUpdate(_id, {
-                "email": email,
-                //"password": password? hashPassword: "",
-                "userName": userName,
-                "role": role,
-                "notes": notes ? notes : []
-            })
+            const user = new User({
+                _id: _id,
+                email: email,
+                userName: userName,
+                role: role,
+                notes: notes ? notes : [],
+                password: hashPassword
+            });
+            
+            const userDb = await User.findByIdAndUpdate(_id, user);
+            console.log(userDb);
+           
             if (!userDb) {
-                return res.status(404).json({
+                res.status(404).json({
                     message: "Error! cant update"
-                })
-            }
+                });
+            };
 
             res.status(201).json({
                 message: "User updated!"
-            })
+            });
 
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
-            }
-            //res.redirect(500, "/");
-            //next(error);
-        }
+            };
+
+            res.status(error.statusCode).json({
+                message: error.message
+            });
+        };
     },
 
     deleteUser: async (req, res, next) => {
 
-
         try {
             const { id } = req.body;
             const userDb = await User.findByIdAndDelete(id);
+            console.log(userDb);
             if (!userDb) {
                 res.status(404).json({
                     message: "Cant find user with that id"
-                })
-            }
+                });
+            };
 
             res.status(204).json({
                 message: "Used deleted!"
@@ -158,28 +145,33 @@ const userController = {
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
-            }
-            //res.redirect(500, "/");
-            //next(error);
-        }
+            };
+            res.status(500).json({
+                message: error
+            });
+        };
     },
 
     addNoteToUser: async (req, res, next) => {
 
         try {
-            const user = await User.findById("616f516454a13fa1bca37697")
-            console.log(user);
-            // hot to get the user. if he is logged in i need his data to travel with every request until he logs out
+            const user = await User.findById("616f516454a13fa1bca37697");
 
             const noteId = req.body._id;
-
-
             const noteDb = await Note.findById(noteId);
 
-            console.log(noteDb);
-
+            if(!noteDb) {
+                res.status(404).json({
+                    message: `No such note in DB`
+                });
+            };
+            
             const result = user.addNoteToUser(noteDb)
-            console.log(result);
+            if (!result) {
+                res.status(404).json({
+                    message:""
+                })
+            }
             res.status(200).json({
                 message: result
             });
@@ -188,10 +180,11 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.redirect(500, "/");
-        }
-
+            res.status(error.statusCode).json({
+                message: error.message
+            });
+        };
     }
-}
+};
 
 export { userController };
