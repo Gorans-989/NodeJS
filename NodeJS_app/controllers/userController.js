@@ -90,11 +90,11 @@ const userController = {
 
         try {
             const { email, userName, role, notes, _id, password } = req.body;
-            // console.log(_id);
+            //console.log(_id); //
             const hashPassword = await bcryptJs.hash(password, 12);
-            // console.log(hashPassword);
+            //console.log(hashPassword);
             const user = new User({
-                _id: _id,
+                _id: _id, 
                 email: email,
                 userName: userName,
                 role: role,
@@ -103,7 +103,7 @@ const userController = {
             });
             
             const userDb = await User.findByIdAndUpdate(_id, user);
-            console.log(userDb);
+            //console.log(userDb);
            
             if (!userDb) {
                 res.status(404).json({
