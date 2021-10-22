@@ -4,7 +4,7 @@ import { Note } from "../models/note.js";
 import { userService } from "../services/userService.js";
 import Validator from "../validator/inputValidator.js";
 import { createToken, decodeToken } from "../services/tokenService.js";
-import e from "express";
+
 
 
 
@@ -76,6 +76,16 @@ const userController = {
 
     createUser: async (req, res, next) => {
         try {
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = decodeToken(token);
+
+            if (payload.role !== "admin") {
+                //one way 
+                return res.status(403).json({
+                    message: " not admin"
+                })
+            }
+
             const { email, password, userName, role, notes } = req.body;
             const userDb = await User.findOne({ "email": email });
 
@@ -109,8 +119,18 @@ const userController = {
     },
 
     updateUser: async (req, res, next) => {
-
         try {
+
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = decodeToken(token);
+
+            if (payload.role !== "admin") {
+                //one way 
+                return res.status(403).json({
+                    message: " not admin"
+                })
+            }
+
             const { email, userName, role, notes, _id, password } = req.body;
             //console.log(_id); //
             const hashPassword = await bcryptJs.hash(password, 12);
@@ -151,6 +171,18 @@ const userController = {
     deleteUser: async (req, res, next) => {
 
         try {
+
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = decodeToken(token);
+
+            if (payload.role !== "admin") {
+                //one way 
+                return res.status(403).json({
+                    message: " not admin"
+                })
+            };
+            
+
             const { id } = req.body;
             const userDb = await User.findByIdAndDelete(id);
             console.log(userDb);
@@ -161,7 +193,7 @@ const userController = {
             };
 
             res.status(204).json({
-                message: "Used deleted!"
+                message: "User deleted!"
             });
 
         } catch (error) {
@@ -174,7 +206,7 @@ const userController = {
         };
     },
 
-    addNoteToUser: async (req, res, next) => {
+    assignNoteToUser: async (req, res, next) => {
 
         try {
             const user = await User.findById("616f516454a13fa1bca37697");
@@ -188,7 +220,7 @@ const userController = {
                 });
             };
 
-            const result = user.addNoteToUser(noteDb)
+            const result = user.assignNoteToUser(noteDb)
             if (!result) {
                 res.status(404).json({
                     message: ""

@@ -55,6 +55,17 @@ const noteController = {
 
     createNote: async (req, res, next) => {
         try {
+
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = decodeToken(token);
+
+            if (payload.role !== "admin") {
+                //one way 
+                return res.status(403).json({
+                    message: " not admin"
+                })
+            }
+
             const { title, content, type, color } = req.body;
             const noteDb = await Note.findOne({ "title": title });
 
@@ -86,6 +97,17 @@ const noteController = {
 
     updateNote: async (req, res, next) => {
         try {
+
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = decodeToken(token);
+
+            if (payload.role !== "admin") {
+                //one way 
+                return res.status(403).json({
+                    message: " not admin"
+                })
+            }
+
             const { _id, title, type, color, content } = req.body;
 
             const newNote = new Note({
@@ -120,6 +142,17 @@ const noteController = {
     deleteNote: async (req, res, next) => {
 
         try {
+
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = decodeToken(token);
+
+            if (payload.role !== "admin") {
+                //one way 
+                return res.status(403).json({
+                    message: " not admin"
+                })
+            };
+
             const id = req.body._id;
             const noteDb = await Note.findByIdAndDelete(id);
             console.log(noteDb);

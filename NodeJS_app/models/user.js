@@ -24,7 +24,7 @@ const userSchema = new Schema({
     }]
 });
 
-userSchema.methods.addNoteToUser = function (note) {
+userSchema.methods.assignNoteToUser = function (note) {
 
     const noteToAdd = this.notes.find(n => n._id.toString() === note._id.toString()); 
     console.log(noteToAdd);

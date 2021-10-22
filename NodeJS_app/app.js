@@ -2,11 +2,8 @@ import express from "express";
 import  mongoose from "mongoose";
 import { router as userRoutes } from "./routes/userRoutes.js";
 import { router as noteRoutes} from "./routes/noteRoutes.js";
-//import bodyParser from "body-parser" deprecated
-import urlDb from "./db/database.js";
-import {User} from "./models/user.js";
-
-import pageNotFound from "./controllers/404.js";
+import urlDb from "./config/database.js";
+import pageNotFound from "./controllers/pageNotFound.js";
 
 const app = express();// start server
 

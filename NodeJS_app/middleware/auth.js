@@ -3,7 +3,7 @@ import bcryptJs from "bcryptjs";
 import dotEnv from "dotenv";
 dotEnv.config();
 
-const verifyToken = (req, res, next) => {
+const auth = (req, res, next) => {
 
     
     // const authHeader = String(req.headers['authorization'] || '');
@@ -39,7 +39,7 @@ const verifyToken = (req, res, next) => {
     }
 }
 
-export default verifyToken;
+export default auth;
 
 
 
