@@ -3,18 +3,15 @@ import bcryptJs from "bcryptjs";
 import dotEnv from "dotenv";
 dotEnv.config();
 
-
-
-
 const verifyToken = (req, res, next) => {
 
     const secret = process.env.TOKEN_KEY;
     // const authHeader = String(req.headers['authorization'] || '');
     // const token = authHeader.substring(7, authHeader.length);
     const token = req.headers.authorization.split(" ")[1];
-    
+
     var payload;
-    try {       
+    try {
 
         payload = jwt.verify(token, secret);
         next();
@@ -26,7 +23,6 @@ const verifyToken = (req, res, next) => {
                 message: e.message
             })
         }
-
         return res.status(400).json({
             message: e.message
         })
