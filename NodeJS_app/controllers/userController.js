@@ -3,6 +3,9 @@ import bcryptJs from "bcryptjs";
 import { Note } from "../models/note.js";
 import { userService } from "../services/userService.js";
 import Validator from "../validator/inputValidator.js";
+import { createToken, decodeToken } from "../services/tokenService.js";
+import e from "express";
+
 
 
 const userController = {
@@ -10,16 +13,31 @@ const userController = {
     getAll: async (req, res, next) => {
 
         try {
-            const users = await userService.getAll();
-            if (!users) {
-                res.status(404).json({
-                    message: "No users to fetch"
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = decodeToken(token);
+
+            if (payload.role !== "admin") {
+                //one way 
+                res.status(403).json({
+                    message: " not admin"
                 })
+                //second way
+                //throw new Error()
             }
-            res.status(200).json({
-                message: "Getting all users is successfull!",
-                users: users
-            });
+            else {
+            
+                const users = await userService.getAll();
+                if (!users) {
+                    res.status(404).json({
+                        message: "No users to fetch"
+                    })
+                }
+                res.status(200).json({
+                    message: "Getting all users is successfull!",
+                    users: users
+                });
+            }
+
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
@@ -32,8 +50,11 @@ const userController = {
 
     getOne: async (req, res, next) => {
         try {
+
             const id = req.params.userId;
-            const userDb = await User.findById(id);
+
+            const userDb = await User.findById(id)
+                .select("email userName role -_id");
             if (!userDb) {
                 return res.status(404).json({
                     message: `No user found with id: ${id}`
@@ -192,15 +213,19 @@ const userController = {
         try {
             const { email, password, userName } = req.body;
 
-            const validate = await Validator.checkEmail(email, password);// should we return the user?
-            if (!validate) {
+            const validatedUser = await Validator.check(email, password);// should we return the user?
+            if (!validatedUser) {
                 res.status(404).json({
                     message: `email or password is incorrect`
                 })
             }
+
+            const signInToken = createToken(validatedUser);
+
             res.status(200).json({
-                message: `Welcome ${userName}`
-                //return property isLogged ?
+                message: `Welcome ${userName}`,
+                token: signInToken
+
             })
         } catch (error) {
             if (!error.statusCode) {
@@ -214,10 +239,10 @@ const userController = {
     log_out: async (req, res, next) => {
         // islogged property in user or in the request. 
         try {
-            
+
 
         } catch (error) {
-            
+
         }
     }
 };

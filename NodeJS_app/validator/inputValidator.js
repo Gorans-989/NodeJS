@@ -3,14 +3,11 @@ import bcryptJs from "bcryptjs";
 
 class Validator {
 
-    static checkEmail = async (email, password) => {
-
-
+    static check = async (email, password) => {
         const user = await User.findOne({ "email": email });
         if (!user) {
             return false;
         }
-        console.log("hi");
         
         return this.checkPassword(user, password);
     };
@@ -20,7 +17,8 @@ class Validator {
         if (!check) {
             return false;
         }
-        return true;
-    }
+        return user;
+    };
+    
 }
 export default Validator;

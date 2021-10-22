@@ -1,10 +1,11 @@
 import express from "express";
+import verifyToken from "../middleware/auth.js"
 const router = express.Router();
 
 import {userController} from "../controllers/userController.js";
 
 //GET   /users
-router.get("/users", userController.getAll);
+router.get("/users",verifyToken, userController.getAll);
 router.get("/users/:userId", userController.getOne); // think of a better way
 // POST /users
 router.post("/users", userController.createUser);
