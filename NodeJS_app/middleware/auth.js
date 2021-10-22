@@ -5,13 +5,23 @@ dotEnv.config();
 
 const verifyToken = (req, res, next) => {
 
-    const secret = process.env.TOKEN_KEY;
+    
     // const authHeader = String(req.headers['authorization'] || '');
     // const token = authHeader.substring(7, authHeader.length);
-    const token = req.headers.authorization.split(" ")[1];
+
+    // check where the token is ( not only in req authorization)
+    
 
     var payload;
     try {
+        const secret = process.env.TOKEN_KEY;
+        const authHeader = req.headers.authorization;
+        if(!authHeader) {
+            return res.status(401).json({
+                message: "not authorized"
+            });
+        }  
+        const token = authHeader.split(" ")[1];
 
         payload = jwt.verify(token, secret);
         next();
