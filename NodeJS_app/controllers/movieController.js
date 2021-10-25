@@ -1,20 +1,23 @@
-import { Movie } from "../models/movie.js";
+// import { Movie } from "../models/movie.js";
+import { decodeToken } from "../services/tokenService.js"
+import { movieService } from "../services/movieService.js"
+
 
 const movieController = {
 
     getAll: async (req, res, next) => {
 
         try {
-            const movieDb = await Movie.find();
-            if (!movieDb) {
+            const moviesDb = await movieService.getAll();//.filter(m => m.quantity > 0)
+            if (!moviesDb) {
                 return res.status(404).json({
                     message: "no movies in database"
                 });
             }
 
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Fetching data is successfully",
-                movies: movies
+                movies: moviesDb
             })
 
         } catch (error) {
@@ -30,16 +33,16 @@ const movieController = {
     getOne: async (req, res, next) => {
         try {
             const id = req.params.movieId;
-            const movieDb = await Movie.findById(id);
+            const movieDb = await movieService.getOne(id);
 
             if (!movieDb) {
-                res.status(404).json({
+                return res.status(404).json({
                     message: `Error! Cant find movie. `
                 })
             }
 
-            res.status(200).json({
-                message: "Gettind data is successfull",
+            return res.status(200).json({
+                message: "Getting data is successfull",
                 movie: movieDb
             })
 
@@ -55,7 +58,6 @@ const movieController = {
 
     createMovie: async (req, res, next) => {
         try {
-
             const token = req.headers.authorization.split(" ")[1];
             const payload = decodeToken(token);
 
@@ -67,24 +69,18 @@ const movieController = {
             }
 
             const { title, genre, quantity, description } = req.body;
-            const movieDb = await Movie.findOne({ "title": title });
-
-            if (movieDb) {
-                return res.status(200).json({
-                    message: "the note already exists in database"
-                });
+            const newMovie = await movieService.createMovie(title, genre, quantity, description);
+            if (!newMovie) {
+                return res.status(400).json({
+                    message: " Movie already exists"
+                })
             }
-            const newMovie = new Movie({
-                title: title,
-                genre: genre,
-                quantity: quantity,
-                description: description ? description : ""
-            })
-            newMovie.save();
-            res.status(201).json({
-                message: "Note created!",
+
+            return res.status(201).json({
+                message: "Movie created!",
                 movie: newMovie
             });
+
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
@@ -109,24 +105,15 @@ const movieController = {
             }
 
             const { _id, title, genre, quantity, description } = req.body;
+            const movieDb = await movieService.updateMovie(_id, title, genre, quantity, description);
 
-            const newMovie = new Movie({
-                title: title,
-                genre: genre,
-                quantity: quantity,
-                description: description ? description : "",
-                _id: _id
-            })
-
-            const movieDb = await Movie.findByIdAndUpdate(_id, newMovie);
-            console.log(movieDb);
             if (!movieDb) {
-                res.status(404).json({
+                return res.status(404).json({
                     message: `Movie doesnt exist. Cant update!`
                 })
             }
-            res.status(201).json({
-                message: "Note updated!"
+            return res.status(201).json({
+                message: "Movie updated!"
             })
 
         } catch (error) {
@@ -153,23 +140,27 @@ const movieController = {
                 })
             };
 
-            const id = req.body._id;
-            const movieDb = await Movie.findByIdAndDelete(id);
-            console.log(movieDb);
-            if (!movieDb) {
-                res.status(404).json({
-                    message: `Can find Movie to delete!`
+            const { id } = req.body;
+            const deletedMovie = await movieService.deleteMovie(id); // returns null of the object
+
+
+
+            if (!deletedMovie) {
+                return res.status(404).json({
+                    message: `Cant find Movie to delete!`
                 })
             }
 
-            res.status(204).json({
-                message: "note deleted successfully"
+            // if i use 204 i cant return the message because is no content
+            return res.status(204).json({
+                message: `Movie deleted successfully!` 
             })
+
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.status(error.statusCode).json({
+            return res.status(error.statusCode).json({
                 message: error.message
             });
         }

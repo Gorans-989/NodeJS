@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import dotEnv from "dotenv";
 
 
 // const headerObj = { alg: "HS256", typ: "JWT" };
@@ -14,7 +13,7 @@ const createToken = (user) => {
                 userId: user._id,
                 email: user.email,
                 role: user.role,
-                exp: Math.floor(Date.now() / 1000) + (60 * 10),
+                exp: Math.floor(Date.now() / 1000) + (60 * 60),
                 iat: Math.floor(Date.now() / 1000) - 30
             },
             secret,
@@ -30,9 +29,8 @@ const createToken = (user) => {
     }
 }
 
-const decodeToken = (token)=> {
-    const secret = process.env.TOKEN_KEY;
-    const payload = jwt.decode(token, secret)
+const decodeToken = (token) => {
+    const payload = jwt.decode(token)
     return payload;
 }
-export {createToken, decodeToken};
+export { createToken, decodeToken };

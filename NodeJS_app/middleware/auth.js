@@ -1,26 +1,28 @@
-import jwt, { decode } from "jsonwebtoken";
-import bcryptJs from "bcryptjs";
+import jwt from "jsonwebtoken";
+
 import dotEnv from "dotenv";
+
+
 dotEnv.config();
 
+
+
 const auth = (req, res, next) => {
-    // const authHeader = String(req.headers['authorization'] || '');
-    // const token = authHeader.substring(7, authHeader.length);
 
-    // check where the token is ( not only in req authorization)
-
-    var payload;
     try {
+        var payload;
         const secret = process.env.TOKEN_KEY;
         const authHeader = req.headers.authorization;
-        if(!authHeader) {
-            return res.status(401).json({
-                message: "not authorized"
-            });
-        }  
-        const token = authHeader.split(" ")[1];
 
+        if (!authHeader) {
+            return res.status(401).json({
+                message: "No token provided"
+            });
+        }
+        const token = authHeader.split(" ")[1];
+        
         payload = jwt.verify(token, secret);
+        
         next();
 
     } catch (e) {

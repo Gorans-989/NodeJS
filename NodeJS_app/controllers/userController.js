@@ -1,38 +1,32 @@
-import { User } from "../models/user.js";
-import bcryptJs from "bcryptjs";
-import { Movie } from "../models/movie.js";
+// import { User } from "../models/user.js";
+// import bcryptJs from "bcryptjs";
+// import { Movie } from "../models/movie.js";
 import { userService } from "../services/userService.js";
-import Validator from "../helpers/validation.js";
+
 import { createToken, decodeToken } from "../services/tokenService.js";
-
-
-
 
 const userController = {
 
     getAll: async (req, res, next) => {
 
         try {
-            const token = req.headers.authorization.split(" ")[1];
-            const payload = decodeToken(token);
-
-            if (payload.role !== "admin") {
-                //one way 
-                res.status(403).json({
+            // is it ok to pass req.headers as parameters?
+            if (!checkPayload(req.headers)) {
+                return res.status(403).json({
                     message: " not admin"
                 })
                 //second way
                 //throw new Error()
             }
             else {
-            
+
                 const users = await userService.getAll();
                 if (!users) {
-                    res.status(404).json({
+                    return res.status(404).json({
                         message: "No users to fetch"
                     })
                 }
-                res.status(200).json({
+                return res.status(200).json({
                     message: "Getting all users is successfull!",
                     users: users
                 });
@@ -42,25 +36,25 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.status(error.statusCode).json({
+            return res.status(error.statusCode).json({
                 message: error.message
             });
         }
     },
 
     getOne: async (req, res, next) => {
+        // do i need getOne User?? the admin can call getAll and work from there . or call update or delete
         try {
 
-            const id = req.params.userId;
+            const { userId } = req.params;
 
-            const userDb = await User.findById(id)
-                .select("email userName role -_id");
+            const userDb = await userService.getOne(userId);
             if (!userDb) {
                 return res.status(404).json({
-                    message: `No user found with id: ${id}`
+                    message: `No user found`
                 })
             }
-            res.status(200).json({
+            return res.status(200).json({
                 message: "user found",
                 user: userDb
             })
@@ -68,51 +62,7 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.status(error.statusCode).json({
-                message: error.message
-            });
-        };
-    },
-
-    createUser: async (req, res, next) => {
-        try {
-            const token = req.headers.authorization.split(" ")[1];
-            const payload = decodeToken(token);
-
-            if (payload.role !== "admin") {
-                //one way 
-                return res.status(403).json({
-                    message: " not admin"
-                })
-            }
-
-            const { email, password, userName, role, movies } = req.body;
-            const userDb = await User.findOne({ "email": email });
-
-            if (userDb) {
-                return res.status(400).json({
-                    message: " Cant use existing email."
-                })
-            }
-
-            const hashPassword = await bcryptJs.hash(password, 12);
-            const user = new User({
-                email: email,
-                userName: userName,
-                role: role,
-                movies: movies ? movies : [],
-                password: hashPassword
-            });
-            user.save();
-            res.status(201).json({
-                message: "User created Successfully"
-            })
-
-        } catch (error) {
-            if (!error.statusCode) {
-                error.statusCode = 500;
-            };
-            res.status(500).json({
+            return res.status(error.statusCode).json({
                 message: error.message
             });
         };
@@ -120,40 +70,30 @@ const userController = {
 
     updateUser: async (req, res, next) => {
         try {
-
-            const token = req.headers.authorization.split(" ")[1];
-            const payload = decodeToken(token);
-
-            if (payload.role !== "admin") {
-                //one way 
+            if (!checkPayload(req.headers)) {
                 return res.status(403).json({
                     message: " not admin"
                 })
             }
+            // const token = req.headers.authorization.split(" ")[1];
+            // const payload = decodeToken(token);
 
-            const { email, userName, role, movies, _id, password } = req.body;
-            //console.log(_id); //
-            const hashPassword = await bcryptJs.hash(password, 12);
-            //console.log(hashPassword);
-            const user = new User({
-                _id: _id,
-                email: email,
-                userName: userName,
-                role: role,
-                movies: movies ? movies : [],
-                password: hashPassword
-            });
+            // if (payload.role !== "admin") {
+            //     //one way 
+            //     return res.status(403).json({
+            //         message: " not admin"
+            //     })
+            // }
 
-            const userDb = await User.findByIdAndUpdate(_id, user);
-            //console.log(userDb);
+            const userDb = await userService.updateUser(req.body); // is this ok?
 
             if (!userDb) {
-                res.status(404).json({
+                return res.status(404).json({
                     message: "Error! cant update"
                 });
             };
 
-            res.status(201).json({
+            return res.status(201).json({
                 message: "User updated!"
             });
 
@@ -162,7 +102,7 @@ const userController = {
                 error.statusCode = 500;
             };
 
-            res.status(error.statusCode).json({
+            return res.status(error.statusCode).json({
                 message: error.message
             });
         };
@@ -171,28 +111,22 @@ const userController = {
     deleteUser: async (req, res, next) => {
 
         try {
-
-            const token = req.headers.authorization.split(" ")[1];
-            const payload = decodeToken(token);
-
-            if (payload.role !== "admin") {
-                //one way 
+            if (!checkPayload(req.headers)) {
                 return res.status(403).json({
                     message: " not admin"
                 })
-            };
-            
+            }
 
             const { id } = req.body;
-            const userDb = await User.findByIdAndDelete(id);
-            console.log(userDb);
+            const userDb = await userService.deleteUser(id);
+
             if (!userDb) {
-                res.status(404).json({
+                return res.status(404).json({
                     message: "Cant find user with that id"
                 });
             };
 
-            res.status(204).json({
+            return res.status(204).json({
                 message: "User deleted!"
             });
 
@@ -200,77 +134,105 @@ const userController = {
             if (!error.statusCode) {
                 error.statusCode = 500;
             };
-            res.status(500).json({
+            return res.status(500).json({
                 message: error
             });
         };
     },
 
-    // assignNoteToUser: async (req, res, next) => {
+    rentMovie: async (req, res, next) => {
+        try {
 
-    //     try {
-    //         const user = await User.findById("616f516454a13fa1bca37697");
+            if (!checkPayload(req.headers)) {
+                return res.status(403).json({
+                    message: " not admin"
+                })
+            }
+            // check token
 
-    //         const noteId = req.body._id;
-    //         const noteDb = await Note.findById(noteId);
 
-    //         if (!noteDb) {
-    //             res.status(404).json({
-    //                 message: `No such note in DB`
-    //             });
-    //         };
+            const { userId, movieId } = req.body; // 
+            const result = await userService.rentMovie(userId, movieId);
 
-    //         const result = user.assignNoteToUser(noteDb)
-    //         if (!result) {
-    //             res.status(404).json({
-    //                 message: ""
-    //             })
-    //         }
-    //         res.status(200).json({
-    //             message: result
-    //         });
+            console.log("returned to controller");
 
-    //     } catch (error) {
-    //         if (!error.statusCode) {
-    //             error.statusCode = 500;
-    //         }
-    //         res.status(error.statusCode).json({
-    //             message: error.message
-    //         });
-    //     };
-    // },
+
+            if (!result.success) {
+                return res.status(400).json({
+                    message: result.message
+                })
+            }
+
+            return res.status(201).json({
+                message: `Movie rented successfully! `
+            })
+
+        } catch (error) {
+            if (!error.statusCode) {
+                error.statusCode = 500;
+            };
+            return res.status(500).json({
+                message: error
+            });
+
+        }
+    },
+
+    register: async (req, res, next) => {
+        try {
+
+            const { email, password, userName, role, rentedMovies } = req.body;
+            const userObj = await userService.register(email, userName, role, rentedMovies, password);
+
+            if (!userObj) {
+                return res.status(400).json({
+                    message: " Cant use existing email."
+                })
+            }
+
+            return res.status(201).json({
+                message: "User created Successfully"
+            })
+
+        } catch (error) {
+            if (!error.statusCode) {
+                error.statusCode = 500;
+            };
+            return res.status(error.statusCode).json({
+                message: error.message
+            });
+        };
+    },
 
     log_in: async (req, res, next) => {
 
         try {
-            const { email, password, userName } = req.body;
+            const { email, password } = req.body;
+            const logedUser = await userService.log_in(email, password);
 
-            const validatedUser = await Validator.check(email, password);// should we return the user?
-            if (!validatedUser) {
-                res.status(404).json({
-                    message: `email or password is incorrect`
+            if (!logedUser) {
+                return res.status(403).json({
+                    message: `Email or password is incorrect!`
                 })
             }
-
-            const signInToken = createToken(validatedUser);
-
-            res.status(200).json({
-                message: `Welcome ${userName}`,
-                token: signInToken
+            return res.status(200).json({
+                message: `Welcome ${logedUser.user.userName}`,
+                token: logedUser.token
 
             })
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
-            res.status(error.statusCode).json({
+            return res.status(error.statusCode).json({
                 message: error.message
             });
         }
     },
 
     log_out: async (req, res, next) => {
-        // islogged property in user or in the request. 
+        // 1. Check cookies or local storage for loged user
+        // 2. Delete from cookies or local storage info about user/ 
         try {
 
 
@@ -279,5 +241,15 @@ const userController = {
         }
     }
 };
+
+const checkPayload = (headers) => {
+    const token = headers.authorization.split(" ")[1];
+    const payload = decodeToken(token);
+
+    if (payload.role !== "admin") {
+        return false;
+    }
+    return payload;
+}
 
 export { userController };

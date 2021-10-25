@@ -19,8 +19,9 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    movies: [{
-        type: movieSchema
+    rentedMovies: [{
+        type: movieSchema,
+        required: false
     }]
 });
 

@@ -6,17 +6,17 @@ import { userController } from "../controllers/userController.js";
 
 //GET   /users
 router.get("/users", auth, userController.getAll);
-router.get("/users/:userId", userController.getOne); 
+router.get("/users/:userId", userController.getOne);
 // POST /users
-router.post("/users", auth ,userController.createUser);
+router.post("/users/register", userController.register);
 
-//router.post("/users/assignNoteToUser", userController.assignNoteToUser);
+router.post("/users/rentmovie", auth, userController.rentMovie);
 
 //DELETE /users/delete
-router.delete('/users/delete', auth ,userController.deleteUser);
+router.delete('/users/delete', auth, userController.deleteUser);
 
 //PUT /users/update
-router.put("/users/update", auth ,userController.updateUser);
+router.put("/users/update", auth, userController.updateUser);
 
 // post /login
 router.post("/login", userController.log_in);

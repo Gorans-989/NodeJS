@@ -1,7 +1,6 @@
-
 const pageNotFound = async (req, res, next) => {
     res.status(404).json({
-        message: "Wrong address"
+        message: "The address you entered is wrong!"
     })
 }
 export default pageNotFound;
