@@ -4,13 +4,10 @@ import dotEnv from "dotenv";
 dotEnv.config();
 
 const auth = (req, res, next) => {
-
-    
     // const authHeader = String(req.headers['authorization'] || '');
     // const token = authHeader.substring(7, authHeader.length);
 
     // check where the token is ( not only in req authorization)
-    
 
     var payload;
     try {

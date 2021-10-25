@@ -1,5 +1,5 @@
 import Mongoose from "mongoose";
-
+import { movieSchema } from "./movie.js";
 const Schema = Mongoose.Schema;
 
 const userSchema = new Schema({
@@ -19,23 +19,23 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    notes: [{
-        type: Object
+    movies: [{
+        type: movieSchema
     }]
 });
 
-userSchema.methods.assignNoteToUser = function (note) {
+// userSchema.methods.assignNoteToUser = function (note) {
 
-    const noteToAdd = this.notes.find(n => n._id.toString() === note._id.toString()); 
-    console.log(noteToAdd);
-    if (!noteToAdd) {
-        this.notes.push(note);
-        this.save();
-        return `Note ${note.title} added to user!`;
-    }
-    throw new Error(`User already has this Note "${note.title}"`)
-}
+//     const noteToAdd = this.notes.find(n => n._id.toString() === note._id.toString()); 
+//     console.log(noteToAdd);
+//     if (!noteToAdd) {
+//         this.notes.push(note);
+//         this.save();
+//         return `Note ${note.title} added to user!`;
+//     }
+//     throw new Error(`User already has this Note "${note.title}"`)
+// }
 
-
+Mongoose.mode
 const User = Mongoose.model("User", userSchema);
 export { User };

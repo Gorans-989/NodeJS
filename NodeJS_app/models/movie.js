@@ -1,28 +1,26 @@
 import Mongoose from "mongoose";
 const Schema = Mongoose.Schema;
 
-const noteSchema = new Schema({
+const movieSchema = new Schema({
     title: {
         type: String,
         required: true
     },
-    content: {
+    genre: {
         type: String,
         required: true
     },
-    type: {
-        type: String,
+    quantity: {
+        type: Number,
         required: true
     },
-    color: {
+    description: {
         type: String,
         required: false
     }
-    // userId: {
-    //     type: Schema.Types.ObjectId, ref: "User", required: false
-    // }
 
 })
 
-const Note = Mongoose.model("Note", noteSchema);
-export { Note };
+const Movie = Mongoose.model("Movie", movieSchema);
+
+export { Movie , movieSchema };

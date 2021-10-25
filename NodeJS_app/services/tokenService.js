@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotEnv from "dotenv";
-dotEnv.config();
+
 
 // const headerObj = { alg: "HS256", typ: "JWT" };
 // const payloadObj = { name: userName, email: email, exp: "1h" };

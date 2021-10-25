@@ -1,20 +1,20 @@
-import { Note } from "../models/note.js";
+import { Movie } from "../models/movie.js";
 
-const noteController = {
+const movieController = {
 
     getAll: async (req, res, next) => {
 
         try {
-            const noteDb = await Note.find();
-            if (!noteDb) {
+            const movieDb = await Movie.find();
+            if (!movieDb) {
                 return res.status(404).json({
-                    message: "no notes in database"
+                    message: "no movies in database"
                 });
             }
 
             res.status(200).json({
                 message: "Fetching data is successfully",
-                notes: noteDb
+                movies: movies
             })
 
         } catch (error) {
@@ -29,18 +29,18 @@ const noteController = {
 
     getOne: async (req, res, next) => {
         try {
-            const id = req.params.noteId;
-            const noteDb = await Note.findById(id);
+            const id = req.params.movieId;
+            const movieDb = await Movie.findById(id);
 
-            if (!noteDb) {
+            if (!movieDb) {
                 res.status(404).json({
-                    message: `Cant find note with id: ${id}`
+                    message: `Error! Cant find movie. `
                 })
             }
 
             res.status(200).json({
                 message: "Gettind data is successfull",
-                note: noteDb
+                movie: movieDb
             })
 
         } catch (error) {
@@ -53,7 +53,7 @@ const noteController = {
         }
     },
 
-    createNote: async (req, res, next) => {
+    createMovie: async (req, res, next) => {
         try {
 
             const token = req.headers.authorization.split(" ")[1];
@@ -66,24 +66,24 @@ const noteController = {
                 })
             }
 
-            const { title, content, type, color } = req.body;
-            const noteDb = await Note.findOne({ "title": title });
+            const { title, genre, quantity, description } = req.body;
+            const movieDb = await Movie.findOne({ "title": title });
 
-            if (noteDb) {
+            if (movieDb) {
                 return res.status(200).json({
                     message: "the note already exists in database"
                 });
             }
-            const newNote = new Note({
+            const newMovie = new Movie({
                 title: title,
-                content: content,
-                type: type,
-                color: color ? color : null
+                genre: genre,
+                quantity: quantity,
+                description: description ? description : ""
             })
-            newNote.save();
+            newMovie.save();
             res.status(201).json({
                 message: "Note created!",
-                note: newNote
+                movie: newMovie
             });
         } catch (error) {
             if (!error.statusCode) {
@@ -95,7 +95,7 @@ const noteController = {
         }
     },
 
-    updateNote: async (req, res, next) => {
+    updateMovie: async (req, res, next) => {
         try {
 
             const token = req.headers.authorization.split(" ")[1];
@@ -108,21 +108,21 @@ const noteController = {
                 })
             }
 
-            const { _id, title, type, color, content } = req.body;
+            const { _id, title, genre, quantity, description } = req.body;
 
-            const newNote = new Note({
+            const newMovie = new Movie({
                 title: title,
-                content: content,
-                type: type,
-                color: color ? color : null,
+                genre: genre,
+                quantity: quantity,
+                description: description ? description : "",
                 _id: _id
             })
 
-            const noteDb = await Note.findByIdAndUpdate(_id, newNote);
-            console.log(noteDb);
-            if (!noteDb) {
+            const movieDb = await Movie.findByIdAndUpdate(_id, newMovie);
+            console.log(movieDb);
+            if (!movieDb) {
                 res.status(404).json({
-                    message: `Note with id: ${_id} doesnt exist. cant update!`
+                    message: `Movie doesnt exist. Cant update!`
                 })
             }
             res.status(201).json({
@@ -139,7 +139,7 @@ const noteController = {
         }
     },
 
-    deleteNote: async (req, res, next) => {
+    deleteMovie: async (req, res, next) => {
 
         try {
 
@@ -154,11 +154,11 @@ const noteController = {
             };
 
             const id = req.body._id;
-            const noteDb = await Note.findByIdAndDelete(id);
-            console.log(noteDb);
-            if (!noteDb) {
+            const movieDb = await Movie.findByIdAndDelete(id);
+            console.log(movieDb);
+            if (!movieDb) {
                 res.status(404).json({
-                    message: `Can find note with id: ${id} to delete!`
+                    message: `Can find Movie to delete!`
                 })
             }
 
@@ -178,4 +178,4 @@ const noteController = {
 
 
 
-export { noteController };
+export { movieController };

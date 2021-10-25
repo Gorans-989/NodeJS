@@ -9,7 +9,8 @@ router.get("/users", auth, userController.getAll);
 router.get("/users/:userId", userController.getOne); 
 // POST /users
 router.post("/users", auth ,userController.createUser);
-router.post("/users/assignNoteToUser", userController.assignNoteToUser);
+
+//router.post("/users/assignNoteToUser", userController.assignNoteToUser);
 
 //DELETE /users/delete
 router.delete('/users/delete', auth ,userController.deleteUser);

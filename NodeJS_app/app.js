@@ -1,7 +1,7 @@
 import express from "express";
 import  mongoose from "mongoose";
 import { router as userRoutes } from "./routes/userRoutes.js";
-import { router as noteRoutes} from "./routes/noteRoutes.js";
+import { router as movieRoutes} from "./routes/movieRoutes.js";
 import urlDb from "./config/database.js";
 import pageNotFound from "./controllers/pageNotFound.js";
 
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 
 
 app.use(userRoutes);
-app.use(noteRoutes);
+app.use(movieRoutes);
 
 app.use("/",pageNotFound);
 

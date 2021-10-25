@@ -1,8 +1,8 @@
 import { User } from "../models/user.js";
 import bcryptJs from "bcryptjs";
-import { Note } from "../models/note.js";
+import { Movie } from "../models/movie.js";
 import { userService } from "../services/userService.js";
-import Validator from "../validator/inputValidator.js";
+import Validator from "../helpers/validation.js";
 import { createToken, decodeToken } from "../services/tokenService.js";
 
 
@@ -86,7 +86,7 @@ const userController = {
                 })
             }
 
-            const { email, password, userName, role, notes } = req.body;
+            const { email, password, userName, role, movies } = req.body;
             const userDb = await User.findOne({ "email": email });
 
             if (userDb) {
@@ -100,7 +100,7 @@ const userController = {
                 email: email,
                 userName: userName,
                 role: role,
-                notes: notes ? notes : [],
+                movies: movies ? movies : [],
                 password: hashPassword
             });
             user.save();
@@ -131,7 +131,7 @@ const userController = {
                 })
             }
 
-            const { email, userName, role, notes, _id, password } = req.body;
+            const { email, userName, role, movies, _id, password } = req.body;
             //console.log(_id); //
             const hashPassword = await bcryptJs.hash(password, 12);
             //console.log(hashPassword);
@@ -140,7 +140,7 @@ const userController = {
                 email: email,
                 userName: userName,
                 role: role,
-                notes: notes ? notes : [],
+                movies: movies ? movies : [],
                 password: hashPassword
             });
 
@@ -206,39 +206,39 @@ const userController = {
         };
     },
 
-    assignNoteToUser: async (req, res, next) => {
+    // assignNoteToUser: async (req, res, next) => {
 
-        try {
-            const user = await User.findById("616f516454a13fa1bca37697");
+    //     try {
+    //         const user = await User.findById("616f516454a13fa1bca37697");
 
-            const noteId = req.body._id;
-            const noteDb = await Note.findById(noteId);
+    //         const noteId = req.body._id;
+    //         const noteDb = await Note.findById(noteId);
 
-            if (!noteDb) {
-                res.status(404).json({
-                    message: `No such note in DB`
-                });
-            };
+    //         if (!noteDb) {
+    //             res.status(404).json({
+    //                 message: `No such note in DB`
+    //             });
+    //         };
 
-            const result = user.assignNoteToUser(noteDb)
-            if (!result) {
-                res.status(404).json({
-                    message: ""
-                })
-            }
-            res.status(200).json({
-                message: result
-            });
+    //         const result = user.assignNoteToUser(noteDb)
+    //         if (!result) {
+    //             res.status(404).json({
+    //                 message: ""
+    //             })
+    //         }
+    //         res.status(200).json({
+    //             message: result
+    //         });
 
-        } catch (error) {
-            if (!error.statusCode) {
-                error.statusCode = 500;
-            }
-            res.status(error.statusCode).json({
-                message: error.message
-            });
-        };
-    },
+    //     } catch (error) {
+    //         if (!error.statusCode) {
+    //             error.statusCode = 500;
+    //         }
+    //         res.status(error.statusCode).json({
+    //             message: error.message
+    //         });
+    //     };
+    // },
 
     log_in: async (req, res, next) => {
 
@@ -268,6 +268,7 @@ const userController = {
             });
         }
     },
+
     log_out: async (req, res, next) => {
         // islogged property in user or in the request. 
         try {
