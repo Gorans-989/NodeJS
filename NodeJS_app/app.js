@@ -5,6 +5,10 @@ import { router as movieRoutes} from "./routes/movieRoutes.js";
 import urlDb from "./config/database.js";
 import pageNotFound from "./controllers/pageNotFound.js";
 
+import dotEnv from "dotenv";
+dotEnv.config();
+
+
 const app = express();// start server
 
 app.use(express.json()); // parse the incoming request
