@@ -32,7 +32,7 @@ const movieController = {
 
     getOne: async (req, res, next) => {
         try {
-            const id = req.params.movieId;
+            const { movieId: id } = req.params;
             const movieDb = await movieService.getOne(id);
 
             if (!movieDb) {
@@ -58,7 +58,8 @@ const movieController = {
 
     createMovie: async (req, res, next) => {
         try {
-            if (!checkPayload(req.headers)) {
+            const {authorization: authHeader} = req.headers;
+            if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
@@ -89,14 +90,15 @@ const movieController = {
 
     updateMovie: async (req, res, next) => {
         try {
-            if (!checkPayload(req.headers)) {
+            const {authorization: authHeader} = req.headers;
+            if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
             }
 
-            const { _id, title, genre, quantity, description } = req.body;
-            const movieDb = await movieService.updateMovie(_id, title, genre, quantity, description);
+            const { id, title, genre, quantity, description } = req.body;
+            const movieDb = await movieService.updateMovie(id, title, genre, quantity, description);
 
             if (!movieDb) {
                 return res.status(404).json({
@@ -120,8 +122,8 @@ const movieController = {
     deleteMovie: async (req, res, next) => {
 
         try {
-
-            if (!checkPayload(req.headers)) {
+            const {authorization: authHeader} = req.headers;
+            if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
@@ -138,7 +140,7 @@ const movieController = {
 
             // if i use 204 i cant return the message because is no content
             return res.status(204).json({
-                message: `Movie deleted successfully!` 
+                message: `Movie deleted successfully!`
             })
 
         } catch (error) {

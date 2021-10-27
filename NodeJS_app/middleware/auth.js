@@ -16,6 +16,9 @@ const auth = (req, res, next) => {
         }
         const token = authHeader.split(" ")[1];
         
+        const decoded = jwt.decode(token);
+        console.log(decoded);
+
         payload = jwt.verify(token, secret);
         
         next();

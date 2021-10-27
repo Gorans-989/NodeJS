@@ -1,7 +1,8 @@
 import { User } from "../models/user.js";
 import bcryptJs from "bcryptjs";
 import { createToken } from "../services/tokenService.js";
-import { Movie } from "../models/movie.js"
+import { Movie } from "../models/movie.js";
+import Validator from "../helpers/validation.js";
 
 const userService = {
 
@@ -21,23 +22,20 @@ const userService = {
             .select("email userName role -_id");
         return userDb;
     },
-    updateUser: async (data) => {
+    updateUser: async (email, userName, role, id, password) => {
 
-        const { email, userName, role, rentedMovies, _id, password } = data;
-        //console.log(_id); //
         const salt = await bcryptJs.genSalt(10);
         const hashPassword = await bcryptJs.hash(password, salt);
         //console.log(hashPassword);
         const user = new User({
-            _id: _id,
+            _id: id,
             email: email,
             userName: userName,
             role: role,
-            rentedMovies: rentedMovies ? rentedMovies : [],
             password: hashPassword
         });
 
-        return await User.findByIdAndUpdate(_id, user); // is it ok to use like this?
+        return await User.findByIdAndUpdate(id, user); // is it ok to use like this?
     },
     deleteUser: async (id) => {
         const userDb = await User.findByIdAndDelete(id);
@@ -49,28 +47,26 @@ const userService = {
         const userDb = await User.findById(userId);
         // return strings and display them in catch block
         // throw errors and catch them in the controller 
-        
+        const movieDb = await Movie.findById(movieId);
+        if (movieDb.quantity <= 0) {
+            return {
+                message: "Out of stock",
+                success: false
+            };
+        };
         if (!userDb) {
             return {
                 message: "user not found",
                 success: false
             };
-        }
+        };
         if (userDb.rentedMovies.length === 4) {
             return {
                 message: "Cant have more than 4 rented movies.\n Please return one or more.",
                 success: false
             };
-        }
-        
-        const movieDb =  await Movie.findById(movieId);        // maybe user movieService method getOne(movieId) ?
-        if(movieDb.quantity <= 0){
-            return {
-                message: "Out of stock",
-                success: false
-            };
-        }
-        
+        };
+
         const rentedMovie = await userDb.rentedMovies.find(m => m._id.toString() === movieId.toString());
 
         if (rentedMovie) {
@@ -83,19 +79,25 @@ const userService = {
         movieDb.save();
         userDb.rentedMovies.push(movieDb);
         userDb.save();
-
         return {
             user: userDb,
             success: true
         }
 
     },
-    returnRentedMovie: async ()=> {
+    returnRentedMovie: async (userId, movieId) => {
         //TO DO
+        // get user
+        // const user = await User.findById(userId);
+
+        // // search rented movies for movie to return
+        // const mov = user.rentedMovies
+        // remove from array
+        // user.save()
     },
-    register: async (email, userName, role, rentedMovies, password) => {
-        const userObj = await User.findOne({ "email": email });
-        if (userObj) {
+    register: async (email, userName, role, password) => {
+        const existingUser = await User.findOne({ "email": email });
+        if (existingUser) {
             return false;
         }
 
@@ -106,7 +108,7 @@ const userService = {
             email: email,
             userName: userName,
             role: role ? role : "user",
-            rentedMovies: rentedMovies ? rentedMovies : [],
+            rentedMovies: [],
             password: hashPassword
         });
         newUser.save();
@@ -114,7 +116,7 @@ const userService = {
     },
     log_in: async (email, password) => {
 
-        const validatedUser = await Validator.check(email, password);
+        const validatedUser = await Validator.checkCredentials(email, password);
         if (!validatedUser) {
             return false;
         }
@@ -125,32 +127,13 @@ const userService = {
             token: signInToken
         }
     },
-    log_out:async ()=> {
+    log_out: async () => {
         // to do
     }
 
 }
 // is is ok to have a separate class like this OR
 // should i form a class userService and put all the methods in there ( get, update , delete, check ...)
-class Validator {
 
-    static check = async (email, password) => {
-        const user = await User.findOne({ "email": email });
-        if (!user) {
-            return false;
-        }
-
-        return this.checkPassword(user, password);
-    };
-    static checkPassword = async (user, password) => {
-
-        const check = await bcryptJs.compare(password, user.password);
-        if (!check) {
-            return false;
-        }
-        return user;
-    };
-
-}
 
 export { userService };

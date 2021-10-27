@@ -20,10 +20,14 @@ const userSchema = new Schema({
         required: true
     },
     rentedMovies: [{
-        type: movieSchema,
-        required: false
+        type: movieSchema, // maybe add ref to movies so it can update data.
+        required: true
     }]
 });
+
+
+const User = Mongoose.model("User", userSchema);
+export { User };
 
 // userSchema.methods.assignNoteToUser = function (note) {
 
@@ -36,7 +40,3 @@ const userSchema = new Schema({
 //     }
 //     throw new Error(`User already has this Note "${note.title}"`)
 // }
-
-Mongoose.mode
-const User = Mongoose.model("User", userSchema);
-export { User };

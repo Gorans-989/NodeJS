@@ -9,7 +9,6 @@ const movieService = {
     },
 
     getOne: async (id) => {
-
         const movieDb = await Movie.findById(id);
         return movieDb;
     },
@@ -30,17 +29,17 @@ const movieService = {
         return newMovie;
     },
 
-    updateMovie: async (_id, title, genre, quantity, description) => {
+    updateMovie: async (id, title, genre, quantity, description) => {
 
         const newMovie = new Movie({
             title: title,
             genre: genre,
             quantity: quantity,
             description: description ? description : "",
-            _id: _id
+            _id: id
         })
 
-        const updatedMovie = await Movie.findByIdAndUpdate(_id, newMovie);
+        const updatedMovie = await Movie.findByIdAndUpdate(id, newMovie);
         return updatedMovie;
     },
 
@@ -50,8 +49,6 @@ const movieService = {
         // Update the rented movie list 
         //const [{rentedMovies}] = allUsers; // rented movie list for first user
         
-       
-
         const deletedMovie = await Movie.findByIdAndDelete(id); // to use for each user.rentedMoviList
 
         console.log("==========", deletedMovie);

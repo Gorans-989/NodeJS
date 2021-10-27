@@ -11,12 +11,19 @@ const userController = {
 
         try {
             // is it ok to pass req.headers as parameters?
-            if (!checkPayload(req.headers)) {
+            const {authorization: authHeader} = req.headers;
+            
+            if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
+
                 //second way
-                //throw new Error()
+                // var err = {};
+                // err.message = "not admin!!!";
+                // err.statusCode = 404;
+                // console.log(err);
+                // throw new Error(err);                           
             }
             else {
 
@@ -33,6 +40,8 @@ const userController = {
             }
 
         } catch (error) {
+
+            //console.log(error.statusCode);
             if (!error.statusCode) {
                 error.statusCode = 500;
             }
@@ -45,8 +54,14 @@ const userController = {
     getOne: async (req, res, next) => {
         // do i need getOne User?? the admin can call getAll and work from there . or call update or delete
         try {
+            const {authorization: authHeader} = req.headers;
+            if (!(await checkPayload(authHeader))) {
+                return res.status(403).json({
+                    message: " not admin"
+                })
 
-            const { userId } = req.params;
+            }
+            const { userId } = req.params;//or from body
 
             const userDb = await userService.getOne(userId);
             if (!userDb) {
@@ -70,22 +85,16 @@ const userController = {
 
     updateUser: async (req, res, next) => {
         try {
-            if (!checkPayload(req.headers)) {
+            
+            const {authorization: authHeader} = req.headers;
+            if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
             }
-            // const token = req.headers.authorization.split(" ")[1];
-            // const payload = decodeToken(token);
-
-            // if (payload.role !== "admin") {
-            //     //one way 
-            //     return res.status(403).json({
-            //         message: " not admin"
-            //     })
-            // }
-
-            const userDb = await userService.updateUser(req.body); // is this ok?
+            //rentedMovies is an array. is it ok to destructure it like this?
+            const { email, userName, role, id, password } = req.body;
+            const userDb = await userService.updateUser(email, userName, role, id, password ); // is this ok?
 
             if (!userDb) {
                 return res.status(404).json({
@@ -111,7 +120,8 @@ const userController = {
     deleteUser: async (req, res, next) => {
 
         try {
-            if (!checkPayload(req.headers)) {
+            const {authorization: authHeader} = req.headers;
+            if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
@@ -142,27 +152,23 @@ const userController = {
 
     rentMovie: async (req, res, next) => {
         try {
-
-            if (!checkPayload(req.headers)) {
+            const {authorization: authHeader} = req.headers;
+            if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
             }
-            // check token
-
 
             const { userId, movieId } = req.body; // 
             const result = await userService.rentMovie(userId, movieId);
 
-            console.log("returned to controller");
-
+            //console.log("returned to controller");
 
             if (!result.success) {
                 return res.status(400).json({
                     message: result.message
                 })
             }
-
             return res.status(201).json({
                 message: `Movie rented successfully! `
             })
@@ -177,14 +183,16 @@ const userController = {
 
         }
     },
-    returnRentedMovie: async ()=> {
+    returnRentedMovie: async () => {
+        //userService.returnRentedMovie()
         //TO DO
+
     },
     register: async (req, res, next) => {
         try {
 
-            const { email, password, userName, role, rentedMovies } = req.body;
-            const userObj = await userService.register(email, userName, role, rentedMovies, password);
+            const { email, password, userName, role } = req.body;
+            const userObj = await userService.register(email, userName, role, password);
 
             if (!userObj) {
                 return res.status(400).json({
@@ -243,15 +251,5 @@ const userController = {
         }
     }
 };
-
-// const checkPayload = (headers) => {
-//     const token = headers.authorization.split(" ")[1];
-//     const payload = decodeToken(token);
-
-//     if (payload.role !== "admin") {
-//         return false;
-//     }
-//     return payload;
-// }
 
 export { userController };
