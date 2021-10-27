@@ -2,7 +2,6 @@
 import { checkPayload } from "../services/tokenService.js"
 import { movieService } from "../services/movieService.js"
 
-
 const movieController = {
 
     getAll: async (req, res, next) => {

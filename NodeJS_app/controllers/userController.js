@@ -3,7 +3,7 @@
 // import { Movie } from "../models/movie.js";
 import { userService } from "../services/userService.js";
 
-import { createToken, checkPayload } from "../services/tokenService.js";
+import { checkPayload } from "../services/tokenService.js";
 
 const userController = {
 
@@ -183,11 +183,13 @@ const userController = {
 
         }
     },
+
     returnRentedMovie: async () => {
         //userService.returnRentedMovie()
         //TO DO
 
     },
+
     register: async (req, res, next) => {
         try {
 
