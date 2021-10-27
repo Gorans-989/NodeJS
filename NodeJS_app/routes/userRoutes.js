@@ -1,8 +1,9 @@
 import express from "express";
 import auth from "../middleware/auth.js"
+import { userController } from "../controllers/userController.js";
 const router = express.Router();
 
-import { userController } from "../controllers/userController.js";
+
 
 //GET   /users
 router.get("/users", auth, userController.getAll);

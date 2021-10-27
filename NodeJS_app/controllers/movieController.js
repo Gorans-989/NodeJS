@@ -1,5 +1,5 @@
 // import { Movie } from "../models/movie.js";
-import { decodeToken } from "../services/tokenService.js"
+import { checkPayload } from "../services/tokenService.js"
 import { movieService } from "../services/movieService.js"
 
 
@@ -58,11 +58,7 @@ const movieController = {
 
     createMovie: async (req, res, next) => {
         try {
-            const token = req.headers.authorization.split(" ")[1];
-            const payload = decodeToken(token);
-
-            if (payload.role !== "admin") {
-                //one way 
+            if (!checkPayload(req.headers)) {
                 return res.status(403).json({
                     message: " not admin"
                 })
@@ -93,12 +89,7 @@ const movieController = {
 
     updateMovie: async (req, res, next) => {
         try {
-
-            const token = req.headers.authorization.split(" ")[1];
-            const payload = decodeToken(token);
-
-            if (payload.role !== "admin") {
-                //one way 
+            if (!checkPayload(req.headers)) {
                 return res.status(403).json({
                     message: " not admin"
                 })
@@ -130,20 +121,14 @@ const movieController = {
 
         try {
 
-            const token = req.headers.authorization.split(" ")[1];
-            const payload = decodeToken(token);
-
-            if (payload.role !== "admin") {
-                //one way 
+            if (!checkPayload(req.headers)) {
                 return res.status(403).json({
                     message: " not admin"
                 })
-            };
+            }
 
             const { id } = req.body;
             const deletedMovie = await movieService.deleteMovie(id); // returns null of the object
-
-
 
             if (!deletedMovie) {
                 return res.status(404).json({

@@ -1,22 +1,31 @@
+import { Strategy as JwtStrategy } from 'passport-jwt';
+import { ExtractJwt } from 'passport-jwt';
 import passport from "passport";
+const secret = process.env.TOKEN_KEY;
 
-const stm = passport.Strategy();
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = "";
+// opts.secretOrKey = secret  //  opts.secretOrKey =  process.env.TOKEN_KEY; doesnt work. 
 
-passport.use(new LocalStrategy(
-    function(username, password, done) {
-      User.findOne({ username: username }, function (err, user) {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        if (!user.verifyPassword(password)) { return done(null, false); }
-        return done(null, user);
-      });
+import {User} from "../models/user.js"; // in order to work
+
+const strategy = passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
+  User.findOne({ id: jwt_payload.userId }, function (err, user) {
+    if (err) {
+      return done(err, false);
     }
-  ));
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
+      // or you could create a new account
+    }
+  });
+}));
 
-  var app = express();
-// app.use(require('serve-static')(__dirname + '/../../public'));
-// app.use(require('cookie-parser')());
-// app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
-app.use(passport.initialize());
-app.use(passport.session());
+const cb = function (req, res) {
+  res.send(req.user.profile);
+}
+
+export { strategy, cb }

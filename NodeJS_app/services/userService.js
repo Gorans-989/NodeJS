@@ -1,6 +1,6 @@
 import { User } from "../models/user.js";
 import bcryptJs from "bcryptjs";
-import { createToken, decodeToken } from "../services/tokenService.js";
+import { createToken } from "../services/tokenService.js";
 import { Movie } from "../models/movie.js"
 
 const userService = {
@@ -90,6 +90,9 @@ const userService = {
         }
 
     },
+    returnRentedMovie: async ()=> {
+        //TO DO
+    },
     register: async (email, userName, role, rentedMovies, password) => {
         const userObj = await User.findOne({ "email": email });
         if (userObj) {
@@ -121,6 +124,9 @@ const userService = {
             user: validatedUser,
             token: signInToken
         }
+    },
+    log_out:async ()=> {
+        // to do
     }
 
 }

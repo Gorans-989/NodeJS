@@ -1,6 +1,4 @@
 import jwt from "jsonwebtoken";
-
-
 // const headerObj = { alg: "HS256", typ: "JWT" };
 // const payloadObj = { name: userName, email: email, exp: "1h" };
 // const secret = process.env.TOKEN_KEY;
@@ -29,8 +27,19 @@ const createToken = (user) => {
     }
 }
 
-const decodeToken = (token) => {
-    const payload = jwt.decode(token)
+// const decodeToken = (token) => {
+//     const payload = jwt.decode(token)
+//     return payload;
+// }
+
+const checkPayload = (headers) => {
+    const token = headers.authorization.split(" ")[1];
+    const payload = jwt.decode(token);
+
+    if (payload.role !== "admin") {
+        return false;
+    }
     return payload;
 }
-export { createToken, decodeToken };
+
+export { createToken, checkPayload };

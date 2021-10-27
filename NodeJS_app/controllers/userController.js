@@ -3,7 +3,7 @@
 // import { Movie } from "../models/movie.js";
 import { userService } from "../services/userService.js";
 
-import { createToken, decodeToken } from "../services/tokenService.js";
+import { createToken, checkPayload } from "../services/tokenService.js";
 
 const userController = {
 
@@ -177,7 +177,9 @@ const userController = {
 
         }
     },
-
+    returnRentedMovie: async ()=> {
+        //TO DO
+    },
     register: async (req, res, next) => {
         try {
 
@@ -242,14 +244,14 @@ const userController = {
     }
 };
 
-const checkPayload = (headers) => {
-    const token = headers.authorization.split(" ")[1];
-    const payload = decodeToken(token);
+// const checkPayload = (headers) => {
+//     const token = headers.authorization.split(" ")[1];
+//     const payload = decodeToken(token);
 
-    if (payload.role !== "admin") {
-        return false;
-    }
-    return payload;
-}
+//     if (payload.role !== "admin") {
+//         return false;
+//     }
+//     return payload;
+// }
 
 export { userController };

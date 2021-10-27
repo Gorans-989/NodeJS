@@ -1,11 +1,6 @@
 import jwt from "jsonwebtoken";
-
 // import dotEnv from "dotenv";
-
-
 // dotEnv.config();
-
-
 
 const auth = (req, res, next) => {
 

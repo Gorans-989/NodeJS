@@ -1,4 +1,5 @@
 import { Movie } from "../models/movie.js";
+import { User } from "../models/user.js";
 
 const movieService = {
 
@@ -45,8 +46,15 @@ const movieService = {
 
     deleteMovie: async (id) => {
         //add logic to remove movies from user property Rented movies!!!
-        const deletedMovie = await Movie.findByIdAndDelete(id);
-        console.log("==========",deletedMovie);
+        const allUsers = await User.find(); // array of users
+        // Update the rented movie list 
+        //const [{rentedMovies}] = allUsers; // rented movie list for first user
+        
+       
+
+        const deletedMovie = await Movie.findByIdAndDelete(id); // to use for each user.rentedMoviList
+
+        console.log("==========", deletedMovie);
         return deletedMovie;
     }
 }
