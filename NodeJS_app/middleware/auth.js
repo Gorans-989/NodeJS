@@ -1,9 +1,6 @@
 import jwt from "jsonwebtoken";
-// import dotEnv from "dotenv";
-// dotEnv.config();
 
 const auth = (req, res, next) => {
-
     try {
         var payload;
         const secret = process.env.TOKEN_KEY;
@@ -14,11 +11,8 @@ const auth = (req, res, next) => {
                 message: "No token provided"
             });
         }
-        const token = authHeader.split(" ")[1];
-        
-        const decoded = jwt.decode(token);
-        console.log(decoded);
 
+        const token = authHeader.split(" ")[1];
         payload = jwt.verify(token, secret);
         
         next();
@@ -35,7 +29,6 @@ const auth = (req, res, next) => {
         })
     }
 }
-
 export default auth;
 
 

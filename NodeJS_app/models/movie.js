@@ -16,7 +16,11 @@ const movieSchema = new Schema({
     },
     description: {
         type: String,
-        required: false
+        required: true
+    },
+    isDeleted: {
+        type:Boolean,
+        required:true
     }
 
 })

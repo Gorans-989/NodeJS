@@ -17,6 +17,6 @@ router.post("/movies/create", auth, movieController.createMovie);
 router.put("/movies/update", auth,movieController.updateMovie);
 
 //DELETE delete /notes/delete
-router.delete("/movies/delete/",auth , movieController.deleteMovie);
+router.put("/movies/delete/",auth , movieController.deleteMovie);
 
 export { router };

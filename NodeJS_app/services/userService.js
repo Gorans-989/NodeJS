@@ -9,7 +9,7 @@ const userService = {
     getAll: async () => {
 
         const users = await User.find()
-            .select("email userName role -_id");
+            .select("email userName role rentedMovies -_id");
 
         return users;
 
@@ -19,23 +19,23 @@ const userService = {
     },
     getOne: async (id) => {
         const userDb = await User.findById(id)
-            .select("email userName role -_id");
+            .select("email userName role rentedMovies -_id");
         return userDb;
     },
     updateUser: async (email, userName, role, id, password) => {
 
         const salt = await bcryptJs.genSalt(10);
         const hashPassword = await bcryptJs.hash(password, salt);
-        //console.log(hashPassword);
-        const user = new User({
-            _id: id,
-            email: email,
-            userName: userName,
-            role: role,
-            password: hashPassword
+        const updatedUser = await User.findByIdAndUpdate(id, {
+            $set: {
+                _id: id,
+                email: email,
+                userName: userName,
+                role: role,
+                password: hashPassword,
+            }
         });
-
-        return await User.findByIdAndUpdate(id, user); // is it ok to use like this?
+        return updatedUser;
     },
     deleteUser: async (id) => {
         const userDb = await User.findByIdAndDelete(id);
@@ -44,10 +44,9 @@ const userService = {
 
     },
     rentMovie: async (userId, movieId) => {
-        const userDb = await User.findById(userId);
-        // return strings and display them in catch block
-        // throw errors and catch them in the controller 
-        const movieDb = await Movie.findById(movieId);
+        const userDb = await User.findById(userId);// or get the logged user from request or local storage
+
+        const movieDb = await Movie.findById(movieId)
         if (movieDb.quantity <= 0) {
             return {
                 message: "Out of stock",
@@ -67,17 +66,22 @@ const userService = {
             };
         };
 
-        const rentedMovie = await userDb.rentedMovies.find(m => m._id.toString() === movieId.toString());
+        const isRented = await userDb.rentedMovies.find(m => m._id.toString() === movieId.toString());
 
-        if (rentedMovie) {
+        if (isRented) {
             return {
                 message: "Cant rent same movie twice. Please choose another",
                 success: false
             }
         }
+
         movieDb.quantity -= 1;
         movieDb.save();
-        userDb.rentedMovies.push(movieDb);
+
+        const movieToRent = await Movie.findById(movieId).
+            select("title description _id");
+
+        userDb.rentedMovies.push(movieToRent);
         userDb.save();
         return {
             user: userDb,
@@ -88,12 +92,20 @@ const userService = {
     returnRentedMovie: async (userId, movieId) => {
         //TO DO
         // get user
-        // const user = await User.findById(userId);
+        const user = await User.findById(userId);
+        const updatedRentedMovies = user.rentedMovies.filter(x => x._id.toString() !== movieId.toString());
+        user.rentedMovies = [...updatedRentedMovies];
+        user.save();
 
-        // // search rented movies for movie to return
-        // const mov = user.rentedMovies
-        // remove from array
-        // user.save()
+        const updatedMovie = await Movie.findByIdAndUpdate(movieId, { 
+            $set: { quantity: updatedMovie.quantity + 1 } 
+        });
+
+        // const movie = await Movie.findById(movieId);
+        // movie.quantity +=1;
+        // movie.save()
+        return updatedMovie;
+
     },
     register: async (email, userName, role, password) => {
         const existingUser = await User.findOne({ "email": email });
@@ -132,8 +144,5 @@ const userService = {
     }
 
 }
-// is is ok to have a separate class like this OR
-// should i form a class userService and put all the methods in there ( get, update , delete, check ...)
-
 
 export { userService };

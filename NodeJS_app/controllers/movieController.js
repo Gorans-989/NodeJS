@@ -138,7 +138,7 @@ const movieController = {
             }
 
             // if i use 204 i cant return the message because is no content
-            return res.status(204).json({
+            return res.status(200).json({
                 message: `Movie deleted successfully!`
             })
 

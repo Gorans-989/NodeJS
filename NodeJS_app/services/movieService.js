@@ -4,12 +4,15 @@ import { User } from "../models/user.js";
 const movieService = {
 
     getAll: async () => {
-        const moviesDb = await Movie.find();//.filter(m => m.quantity > 0)
+        const moviesDb = (await Movie.find()).filter(m => m.isDeleted === false);//.filter(m => m.quantity > 0)
         return moviesDb;
     },
 
     getOne: async (id) => {
         const movieDb = await Movie.findById(id);
+        if (movieDb.isDeleted === true) {
+            return false;
+        }
         return movieDb;
     },
 
@@ -25,33 +28,58 @@ const movieService = {
             quantity: quantity,
             description: description ? description : ""
         })
-        newMovie.save(); // is this a promise?? should i use await
+        newMovie.save();
         return newMovie;
     },
 
     updateMovie: async (id, title, genre, quantity, description) => {
+        //  findByIdAndUpdate returns the original document, not the updated one
+        const updatedMovie = await Movie.findByIdAndUpdate(id, {
+            $set: {
+                "title": title,
+                "quantity": quantity,
+                "genre": genre,
+                "description": description
+            }
+        });
 
-        const newMovie = new Movie({
-            title: title,
-            genre: genre,
-            quantity: quantity,
-            description: description ? description : "",
-            _id: id
-        })
+        if(!updatedMovie){
+            return false;
+        }
+        console.log(updatedMovie);
+        //update movie in rented movies!
+        const users = await User.find();//array of users
+       
+        if(!users) {
+            return false;
+        }
 
-        const updatedMovie = await Movie.findByIdAndUpdate(id, newMovie);
+        for (let u of users) {
+            const movieForUpdate = u.rentedMovies.find(m => m._id.toString() === id.toString());
+            const indexOfMovie = u.rentedMovies.indexOf(movieForUpdate);
+            if (movieForUpdate) {
+                movieForUpdate.title = title? title: updatedMovie.title;
+                movieForUpdate.description = description? description: updatedMovie.description;
+                u.save();
+            }
+            console.log(`The movie:${movieForUpdate} at index ${indexOfMovie}\n`);
+        }
+
         return updatedMovie;
     },
 
     deleteMovie: async (id) => {
-        //add logic to remove movies from user property Rented movies!!!
-        const allUsers = await User.find(); // array of users
-        // Update the rented movie list 
-        //const [{rentedMovies}] = allUsers; // rented movie list for first user
         
-        const deletedMovie = await Movie.findByIdAndDelete(id); // to use for each user.rentedMoviList
-
-        console.log("==========", deletedMovie);
+        const deletedMovie = await Movie.findByIdAndUpdate(id, { "isDeleted": true }); // to use for each user.rentedMoviList
+        const users = await User.find();//array of users
+                
+        for (let u of users) {
+            const updatedRentedMovies = u.rentedMovies.filter(m => m._id.toString() !== id.toString());
+            console.log(`****-${updatedRentedMovies} \n`);
+            u.rentedMovies = [...updatedRentedMovies];
+            u.save();
+        }
+        
         return deletedMovie;
     }
 }

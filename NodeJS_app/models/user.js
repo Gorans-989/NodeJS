@@ -19,10 +19,13 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    rentedMovies: [{
-        type: movieSchema, // maybe add ref to movies so it can update data.
-        required: true
-    }]
+    rentedMovies: [
+        {
+        _id: Schema.Types.ObjectId,
+        title: String, 
+        description: String  
+        }
+    ]
 });
 
 

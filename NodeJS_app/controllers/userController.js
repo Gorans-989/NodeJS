@@ -11,19 +11,12 @@ const userController = {
 
         try {
             // is it ok to pass req.headers as parameters?
-            const {authorization: authHeader} = req.headers;
-            
+            const { authorization: authHeader } = req.headers;
+
             if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
-
-                //second way
-                // var err = {};
-                // err.message = "not admin!!!";
-                // err.statusCode = 404;
-                // console.log(err);
-                // throw new Error(err);                           
             }
             else {
 
@@ -54,13 +47,13 @@ const userController = {
     getOne: async (req, res, next) => {
         // do i need getOne User?? the admin can call getAll and work from there . or call update or delete
         try {
-            const {authorization: authHeader} = req.headers;
-            if (!(await checkPayload(authHeader))) {
-                return res.status(403).json({
-                    message: " not admin"
-                })
+            // const { authorization: authHeader } = req.headers;
+            // if (!(await checkPayload(authHeader))) {
+            //     return res.status(403).json({
+            //         message: " not admin"
+            //     })
 
-            }
+            // }
             const { userId } = req.params;//or from body
 
             const userDb = await userService.getOne(userId);
@@ -85,16 +78,15 @@ const userController = {
 
     updateUser: async (req, res, next) => {
         try {
-            
-            const {authorization: authHeader} = req.headers;
+
+            const { authorization: authHeader } = req.headers;
             if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
                 })
             }
-            //rentedMovies is an array. is it ok to destructure it like this?
             const { email, userName, role, id, password } = req.body;
-            const userDb = await userService.updateUser(email, userName, role, id, password ); // is this ok?
+            const userDb = await userService.updateUser(email, userName, role, id, password); 
 
             if (!userDb) {
                 return res.status(404).json({
@@ -120,7 +112,7 @@ const userController = {
     deleteUser: async (req, res, next) => {
 
         try {
-            const {authorization: authHeader} = req.headers;
+            const { authorization: authHeader } = req.headers;
             if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
@@ -152,7 +144,7 @@ const userController = {
 
     rentMovie: async (req, res, next) => {
         try {
-            const {authorization: authHeader} = req.headers;
+            const { authorization: authHeader } = req.headers;
             if (!(await checkPayload(authHeader))) {
                 return res.status(403).json({
                     message: " not admin"
@@ -184,9 +176,28 @@ const userController = {
         }
     },
 
-    returnRentedMovie: async () => {
-        //userService.returnRentedMovie()
-        //TO DO
+    returnRentedMovie: async (req, res, next) => {
+        try {
+            const { userId, movieId } = req.body;
+            const result = await userService.returnRentedMovie(userId, movieId);
+
+            if (!result) {
+                return res.status(400).json({
+                    message: "not returned"
+                })
+            }
+            return res.status(201).json({
+                message: `Movie returned! `
+            })
+
+        } catch (error) {
+            if (!error.statusCode) {
+                error.statusCode = 500;
+            };
+            return res.status(500).json({
+                message: error
+            });
+        }
 
     },
 

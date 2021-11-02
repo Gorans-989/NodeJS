@@ -1,31 +1,49 @@
-import { Strategy as JwtStrategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { ExtractJwt } from 'passport-jwt';
 import passport from "passport";
+
+// because of import , process.env needs to be preeloaded
 const secret = process.env.TOKEN_KEY;
 
-var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = "";
-// opts.secretOrKey = secret  //  opts.secretOrKey =  process.env.TOKEN_KEY; doesnt work. 
-
-import {User} from "../models/user.js"; // in order to work
-
-const strategy = passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
-  User.findOne({ id: jwt_payload.userId }, function (err, user) {
-    if (err) {
-      return done(err, false);
-    }
-    if (user) {
-      return done(null, user);
-    } else {
-      return done(null, false);
-      // or you could create a new account
-    }
-  });
-}));
-
-const cb = function (req, res) {
-  res.send(req.user.profile);
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: secret,
+  algorithms: "HS256"
 }
 
-export { strategy, cb }
+const verifyCallBack = (dataFromToken, done) => {
+  // the token signature is verified in passport.auth method before. If not ok, The code doesnt execute this function
+  // here you can use your own implementation to verify the payload ( check role, id etc)
+  //this function returns error OR the PAYLOAD OBJ and apends it to the request as a new property 'USER' ( access it request.User ) 
+  console.log(`before if(payload) `);
+  if (dataFromToken) {
+    return done(null, dataFromToken);
+  }
+  else {
+    return done(error, false);
+  }
+}
+
+const strategy = new Strategy(opts, verifyCallBack);
+passport.use(strategy);
+const passportAuth = passport.authenticate("jwt", { session: false });
+export { passportAuth };
+
+
+// try {
+
+//   if (passport.authenticate("jwt", { session: false })){
+//     next()
+//   };
+
+// } catch (e) {
+//  if (e instanceof jwt.JsonWebTokenError) {
+
+//    return res.status(401).json({
+//      message: e.message
+//    })
+//  }
+//  return res.status(400).json({
+//    message: e.message
+//  })
+// }
