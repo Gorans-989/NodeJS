@@ -26,7 +26,7 @@ const movieService = {
             title: title,
             genre: genre,
             quantity: quantity,
-            description: description ? description : ""
+            description: description ? description : " "
         })
         newMovie.save();
         return newMovie;
@@ -39,14 +39,15 @@ const movieService = {
                 "title": title,
                 "quantity": quantity,
                 "genre": genre,
-                "description": description
+                "description": description,
+                "isDeleted" : false
             }
         });
 
         if(!updatedMovie){
             return false;
         }
-        console.log(updatedMovie);
+        
         //update movie in rented movies!
         const users = await User.find();//array of users
        
@@ -56,21 +57,25 @@ const movieService = {
 
         for (let u of users) {
             const movieForUpdate = u.rentedMovies.find(m => m._id.toString() === id.toString());
-            const indexOfMovie = u.rentedMovies.indexOf(movieForUpdate);
+            //const indexOfMovie = u.rentedMovies.indexOf(movieForUpdate);
             if (movieForUpdate) {
                 movieForUpdate.title = title? title: updatedMovie.title;
                 movieForUpdate.description = description? description: updatedMovie.description;
                 u.save();
             }
-            console.log(`The movie:${movieForUpdate} at index ${indexOfMovie}\n`);
         }
 
-        return updatedMovie;
+        return updatedMovie;// the original document is returned// think it a little
     },
 
     deleteMovie: async (id) => {
         
-        const deletedMovie = await Movie.findByIdAndUpdate(id, { "isDeleted": true }); // to use for each user.rentedMoviList
+        const deletedMovie = await Movie.findByIdAndUpdate(id, { 
+            $set: {
+                "isDeleted": true,
+                "quantity": 0 
+            }
+        }); // to use for each user.rentedMoviList
         const users = await User.find();//array of users
                 
         for (let u of users) {

@@ -14,9 +14,9 @@ router.get("/movies/:movieId", movieController.getOne);
 router.post("/movies/create", auth, movieController.createMovie);
 
 //PUT update    /notes/update
-router.put("/movies/update", auth,movieController.updateMovie);
+router.put("/movies/update", auth, movieController.updateMovie);
 
 //DELETE delete /notes/delete
-router.put("/movies/delete/",auth , movieController.deleteMovie);
+router.put("/movies/delete/", auth, movieController.deleteMovie);
 
 export { router };

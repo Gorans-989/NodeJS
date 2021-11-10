@@ -46,7 +46,7 @@ const userService = {
     rentMovie: async (userId, movieId) => {
         const userDb = await User.findById(userId);// or get the logged user from request or local storage
 
-        const movieDb = await Movie.findById(movieId)
+        const movieDb = await Movie.findById(movieId);
         if (movieDb.quantity <= 0) {
             return {
                 message: "Out of stock",
@@ -81,6 +81,7 @@ const userService = {
         const movieToRent = await Movie.findById(movieId).
             select("title description _id");
 
+
         userDb.rentedMovies.push(movieToRent);
         userDb.save();
         return {
@@ -93,17 +94,16 @@ const userService = {
         //TO DO
         // get user
         const user = await User.findById(userId);
+
         const updatedRentedMovies = user.rentedMovies.filter(x => x._id.toString() !== movieId.toString());
         user.rentedMovies = [...updatedRentedMovies];
         user.save();
 
-        const updatedMovie = await Movie.findByIdAndUpdate(movieId, { 
-            $set: { quantity: updatedMovie.quantity + 1 } 
-        });
+        //const updatedMovie = await Movie.findByIdAndUpdate(movieId,  );
 
-        // const movie = await Movie.findById(movieId);
-        // movie.quantity +=1;
-        // movie.save()
+        const updatedMovie = await Movie.findById(movieId);
+        updatedMovie.quantity += 1;
+        updatedMovie.save()
         return updatedMovie;
 
     },
