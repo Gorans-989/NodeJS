@@ -26,9 +26,10 @@ const movieModel = sequelDB.define('movie', {
     },
     isDeleted: {
         type: sequelize.BOOLEAN,
-        allowNull: false
+        allowNull: false,
+        defaultValue: false
     }
 });
 
 // class Movie extends movieModel{};
-export default movieModel;
+export { movieModel };

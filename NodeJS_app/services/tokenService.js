@@ -20,7 +20,8 @@ const createToken = (user) => {
             secret,
             {
                 algorithm: "HS256"
-                //typ: "JWT"
+                //typ: "JWT",
+                
             }
         );
         console.log(`=== token created! `)

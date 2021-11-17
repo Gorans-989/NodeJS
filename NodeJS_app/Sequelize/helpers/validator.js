@@ -1,5 +1,6 @@
-import { User } from "../models/user.js";
+import { userModel as User } from "../models/user.js";
 import bcryptJs from "bcryptjs";
+
 
 class Validator {
 

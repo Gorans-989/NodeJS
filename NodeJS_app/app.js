@@ -6,16 +6,9 @@ import urlDb from "./config/database.js";
 import pageNotFound from "./controllers/pageNotFound.js";
 import passport from "passport";
 import dotenv from "dotenv";
-import sequelDB from "./Sequelize/config/db.js";
-
-import userModel from "./Sequelize/models/user.js";
-import movieModel from "./Sequelize/models/movie.js";
-
+//import sequelDB from "./Sequelize/config/db.js";
 dotenv.config();
-
 //node -r dotenv/config app.js dotenv_config_path=./.env
-
-
 
 
 const app = express();// start server
@@ -43,16 +36,6 @@ mongoose.connect(urlDb)
 })
 .catch(err => {
     console.log(err)
-})
+});
 
-// sequelDB.sync()
-//     .then(result => {
-//         console.log("MySql_db connected");
-
-//     })
-//     .catch(err => {
-//         console.log("err")
-//     });
-
- //app.listen(8080);  
-app.listen(3000);
+app.listen(3050);

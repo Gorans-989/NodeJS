@@ -25,23 +25,8 @@ const userModel = sequelDB.define("user", {
         allowNull: false,
         defaultValue: "user"
     }
-    // rentedMovies: {
-    //     type:sequelize.ARRAY(
-    //         sequelize.STRING
-    //     )
-    // }
-})
+});
 
-
-// id: {
-//     type:sequelize.STRING
-// },
-// title:{
-//     type:sequelize.STRING
-// },
-// description: {
-//     type:sequelize.STRING
-// }
 
 // class User extends userModel{};
-export default userModel;
+export {userModel};
