@@ -66,8 +66,11 @@ const movieService = {
         const isDeleted = await movie.update({
             "isDeleted": true,
             "quantity": 0
-        })
-        const deleteMovieFromRentedList = movie.setUsers([])
+        });
+        
+        const deleteMovieFromRentedList = await movie.setUsers([]);
+        
+        
         return isDeleted;
     }
 }

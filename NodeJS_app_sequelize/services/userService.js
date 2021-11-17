@@ -162,7 +162,7 @@ const userService = {
         if (!validatedUser) {
             return false;
         };
-        console.log(validatedUser);
+        
         const signInToken = createToken(validatedUser);
         return {
             user: validatedUser,

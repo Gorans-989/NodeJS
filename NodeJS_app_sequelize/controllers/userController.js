@@ -1,8 +1,4 @@
-// import { User } from "../models/user.js";
-// import bcryptJs from "bcryptjs";
-// import { Movie } from "../models/movie.js";
 import { userService } from "../services/userService.js";
-
 import { checkPayload } from "../services/tokenService.js";
 
 const userController = {
