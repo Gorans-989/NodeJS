@@ -14,38 +14,35 @@ const opts = {
 }
 
 const verifyCallBack = (dataFromToken, done) => {
-  // the token signature is verified in passport.auth method before. If not ok, The code doesnt execute this function
-  // here you can use your own implementation to verify the payload ( check role, id etc)
-  //this function returns error OR the PAYLOAD OBJ and apends it to the request as a new property 'USER' ( access it request.User ) 
   console.log(`before if(payload) `);
+
   if (dataFromToken) {
+    console.log(dataFromToken);
     return done(null, dataFromToken);
   }
   else {
-    return done(error, false);
+    console.log("error happened , but token signature is ok")
+    return done(null, false,);
   }
 }
 
 const strategy = new Strategy(opts, verifyCallBack);
+
+const myPassport = (req, res, next) => {
+  passport.authenticate("jwt", function (err, user) {
+    if (err) {
+      return res.redirect('/');
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized from goran' });
+    }
+    return next();
+  })(req, res, next);
+
+}
 passport.use(strategy);
-const passportAuth = passport.authenticate("jwt", { session: false });
-export { passportAuth };
 
+export { strategy, myPassport };
 
-// try {
-
-//   if (passport.authenticate("jwt", { session: false })){
-//     next()
-//   };
-
-// } catch (e) {
-//  if (e instanceof jwt.JsonWebTokenError) {
-
-//    return res.status(401).json({
-//      message: e.message
-//    })
-//  }
-//  return res.status(400).json({
-//    message: e.message
-//  })
-// }
+//const passportAuth = passport.authenticate("jwt", { session: false });
+//export { passportAuth };

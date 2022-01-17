@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 //GET all       /movies/
-router.get("/movies/", movieController.getAll);
+router.get("/movies/", auth ,movieController.getAll);
 
 //GET one       /movies/:noteId
 router.get("/movies/:movieId", movieController.getOne);
@@ -17,6 +17,6 @@ router.post("/movies/create", auth, movieController.createMovie);
 router.put("/movies/update", auth, movieController.updateMovie);
 
 //DELETE delete /movies/delete
-router.put("/movies/delete/", auth, movieController.deleteMovie);
+router.delete("/movies/delete/", auth, movieController.deleteMovie);
 
 export { router };

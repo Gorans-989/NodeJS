@@ -1,9 +1,9 @@
 {
-  "name": "rental-app",
+  "name": "validatehash_app",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "App for checking hash_key",
   "type": "module",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,11 +15,6 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mysql2": "^2.3.3",
-    "nodemon": "^2.0.15",
-    "passport": "^0.5.0",
-    "passport-jwt": "^4.0.0",
-    "sequelize": "^6.9.0",
-    "sequelize-cli": "^6.3.0"
+    "nodemon": "^2.0.15"
   }
 }
