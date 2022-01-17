@@ -1,12 +1,13 @@
 import express from "express";
 import auth from "../middleware/auth.js"
 import { userController } from "../controllers/userController.js";
-import {passportAuth} from "../middleware/passport.js"
+import {myPassport} from "../middleware/passport.js";
 
 const router = express.Router();
 
+
 //GET   /users
-router.get("/users", passportAuth, userController.getAll);
+router.get("/users", myPassport, userController.getAll);
 router.get("/users/:userId",  userController.getOne);
 // POST /users
 router.post("/users/register", userController.register);

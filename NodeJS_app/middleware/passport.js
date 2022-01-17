@@ -3,7 +3,7 @@ import { ExtractJwt } from 'passport-jwt';
 import passport from "passport";
 import dotenv from "dotenv";
 
-dotenv.config();
+
 // because of import , process.env needs to be preeloaded
 const secret = process.env.TOKEN_KEY;
 

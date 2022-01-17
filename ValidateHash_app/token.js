@@ -1,18 +1,16 @@
 import jwt from "jsonwebtoken";
 
-// const headerObj = { alg: "HS256", typ: "JWT" };
-// const payloadObj = { name: userName, email: email, exp: "1h" };
-// const secret = process.env.TOKEN_KEY;
-const createToken = (user) => {
+
+const createToken = () => {
     try {
         const secret = process.env.TOKEN_KEY;
         
         const signInToken = jwt.sign(
             {
                 //name: user.userName,
-                userId: user._id,
+                user: "Gost",
                 //email: user.email,
-                role: user.role,
+                role: "admin",
                 exp: Math.floor(Date.now() / 1000) + (60 * 30),
                 iat: Math.floor(Date.now() / 1000) - 30
             },
@@ -31,15 +29,11 @@ const createToken = (user) => {
     }
 }
 
-const checkPayload = async (authHeader) => {
+const getPayload = (authHeader) => {
     const token = authHeader.split(" ")[1];
     const payload = jwt.decode(token);
 
-    //check email || userId || role
-    if (payload.role !== "admin") {
-        return false;
-    }
     return payload;
 }
 
-export { createToken, checkPayload };
+export { createToken, getPayload };
