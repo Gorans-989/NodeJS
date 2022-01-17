@@ -28,5 +28,5 @@ const userModel = sequelDB.define("user", {
 });
 
 
-// class User extends userModel{};
+class User extends userModel{};
 export {userModel};
