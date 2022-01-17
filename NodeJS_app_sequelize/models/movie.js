@@ -1,5 +1,8 @@
 import sequelize from "sequelize";
 import sequelDB from "../config/db.js";
+import {Model} from "sequelize";
+
+class Movie extends Model {};
 
 const movieModel = sequelDB.define('movie', {
     id: {

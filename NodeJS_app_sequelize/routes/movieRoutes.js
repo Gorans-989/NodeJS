@@ -3,7 +3,6 @@ import { movieController } from "../controllers/movieController.js";
 import auth from "../middleware/auth.js"
 const router = express.Router();
 
-
 //GET all       /movies/
 router.get("/movies/", auth ,movieController.getAll);
 
